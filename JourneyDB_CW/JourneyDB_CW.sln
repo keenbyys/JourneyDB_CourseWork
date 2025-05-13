@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JourneyDB_CW", "JourneyDB_CW\JourneyDB_CW.csproj", "{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {149F0053-34DE-4B8E-BC42-AD1896F39C03}
+	EndGlobalSection
+EndGlobal

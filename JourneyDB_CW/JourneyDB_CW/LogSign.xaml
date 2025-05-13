@@ -1,0 +1,46 @@
+﻿<Window x:Class="JourneyDB_CW.LogSign"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:JourneyDB_CW"
+        mc:Ignorable="d"
+        Title="LogSign" Height="450" Width="283">
+    <Grid Margin="10">
+        <TabControl x:Name="MainTabControl">
+
+            <TabItem Header="Sign up">
+                <StackPanel Margin="20">
+                    <TextBlock Text="Firt name" FontSize="10"/>
+                    <TextBox x:Name="FirstNameTextBox" Margin="0,5"/>
+                    <TextBlock Text="Last name" FontSize="10"/>
+                    <TextBox x:Name="LastNameTextBox" Margin="0,5"/>
+                    <TextBlock Text="Email" FontSize="10"/>
+                    <TextBox x:Name="EmailTextBox" Margin="0,5"/>
+                    <TextBlock Text="Password" FontSize="10"/>
+                    <PasswordBox x:Name="PasswordBox" Margin="0,5"/>
+                    <TextBlock Text="Birth date" FontSize="10"/>
+                    <DatePicker x:Name="BirthDatePicker" Margin="0,5"/>
+                    <Button x:Name="SignUpButton" Content="Sign up" Margin="0,10" Click="SignUpButton_Click"/>
+                </StackPanel>
+            </TabItem>
+            
+            <!-- ====================================================================================== -->
+            
+            <TabItem Header="Log in">
+                <StackPanel Margin="20">
+                    <TextBlock Text="Firt name" FontSize="10"/>
+                    <TextBox x:Name="LogInFirstNameTextBox" Margin="0,5"/>
+                    <TextBlock Text="Last name" FontSize="10"/>
+                    <TextBox x:Name="LogInLastNameTextBox" Margin="0,5"/>
+                    <TextBlock Text="Password" FontSize="10"/>
+                    <PasswordBox x:Name="LogInPasswordBox" Margin="0,5"/>
+                    <Button Content="Sign up" Margin="0,10"/>
+                </StackPanel>
+            </TabItem>
+        
+        </TabControl>
+        
+            
+    </Grid>
+</Window>
