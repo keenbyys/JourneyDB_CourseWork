@@ -76,7 +76,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Text="First name:" FontWeight="Bold" Margin="10,10,10,0" FontSize="20" Grid.Column="0"/>
-                                <TextBlock x:Name="FisrtName" Text="—" Margin="10,10,10,0" FontSize="20" Grid.Column="1"/>
+                                <TextBlock x:Name="FirstName" Text="—" Margin="10,10,10,0" FontSize="20" Grid.Column="1"/>
 
                             </Grid>
 

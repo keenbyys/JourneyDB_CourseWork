@@ -20,6 +20,7 @@ namespace JourneyDB_CW
     /// </summary>
     public partial class LogSign : Window
     {
+        public int UserId { get; private set; }
         private string connectionString = "Server=localhost;Database=db_joint_journey;Uid=root;Pwd=50026022SVK-23;";
 
         public LogSign()
@@ -170,40 +171,36 @@ namespace JourneyDB_CW
 
         private void LogInButton_Click(object sender, RoutedEventArgs e)
         {
-            string email = LogInEmailTextBox.Text.Trim();
-            string password = LogInPasswordBox.Password.Trim();
-
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
-            {
-                MessageBox.Show("Введите email и пароль.");
-                return;
-            }
-
-            string connectionString = "server=localhost;database=your_db_name;uid=your_user;pwd=your_password;";
-            string query = "SELECT * FROM user WHERE email_user = @Email AND password_user = @Password";
+            string email = LogInEmailTextBox.Text;
+            string password = LogInPasswordBox.Password;
 
             using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
+                string query = "SELECT id_user FROM user WHERE email_user = @Email AND password_user = @Password";
                 using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@Email", email);
                     cmd.Parameters.AddWithValue("@Password", password);
 
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    object result = cmd.ExecuteScalar();
+                    if (result != null)
                     {
-                        if (reader.Read())
-                        {
-                            int userId = reader.GetInt32("id_user");
+                        int userId = Convert.ToInt32(result);
 
-                            MainWindow mainWindow = new MainWindow(userId);
-                            mainWindow.Show();
-                            this.Close();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Неверный email или пароль.");
-                        }
+                        // создаём главное окно
+                        MainWindow mainWindow = new MainWindow(userId);
+
+                        // делаем его главным окном приложения
+                        Application.Current.MainWindow = mainWindow;
+                        mainWindow.Show();
+
+                        // закрываем окно логина
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Неверный email или пароль", "Ошибка входа", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
             }

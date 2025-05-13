@@ -19,7 +19,7 @@ namespace JourneyDB_CW;
 public partial class MainWindow : Window
 {
     private string connectionString = "Server=localhost;Database=db_joint_journey;Uid=root;Pwd=50026022SVK-23;";
-    private int currentUserId;
+    private readonly int currentUserId;
 
     public MainWindow(int userId)
     {
@@ -60,9 +60,10 @@ public partial class MainWindow : Window
                 {
                     if (reader.Read())
                     {
-                        UserNameLabel.Content = reader.GetString("first_name_user") + " " + reader.GetString("last_name_user");
-                        EmailLabel.Content = reader.GetString("email_user");
-                        BirthDateLabel.Content = reader.GetDateTime("birth_date").ToShortDateString();
+                        FirstName.Text = reader.GetString("first_name_user");
+                        LastName.Text = reader.GetString("last_name_user");
+                        Email.Text = reader.GetString("email_user");
+                        DateBirth.Text = reader.GetDateTime("birth_date").ToShortDateString();
                     }
                 }
             }
@@ -82,7 +83,7 @@ public partial class MainWindow : Window
                 {
                     DataTable bookingsTable = new DataTable();
                     adapter.Fill(bookingsTable);
-                    BookingsDataGrid.ItemsSource = bookingsTable.DefaultView;
+                    DataGrid_Booking.ItemsSource = bookingsTable.DefaultView;
                 }
             }
         }
@@ -101,7 +102,7 @@ public partial class MainWindow : Window
                 {
                     DataTable reviewsTable = new DataTable();
                     adapter.Fill(reviewsTable);
-                    ReviewsDataGrid.ItemsSource = reviewsTable.DefaultView;
+                    DataGrid_Review.ItemsSource = reviewsTable.DefaultView;
                 }
             }
         }
