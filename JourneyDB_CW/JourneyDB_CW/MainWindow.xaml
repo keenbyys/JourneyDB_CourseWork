@@ -143,7 +143,22 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Background="#DDD" Margin="10">
-                            <DataGrid x:Name="DataGrid_Booking" AutoGenerateColumns="True" Height="630"/>
+                            <TabControl>
+                                
+                                <TabItem Header="Booking">
+                                    <StackPanel Margin="10">
+                                        <DataGrid x:Name="DataGrid_Booking" AutoGenerateColumns="True" Height="630"/>
+                                    </StackPanel>
+                                </TabItem>
+
+                                <TabItem Header="Review">
+                                    <StackPanel Margin="10">
+                                        <DataGrid x:Name="DataGrid_Review" AutoGenerateColumns="True" Height="630"/>
+                                    </StackPanel>
+                                </TabItem>
+                                
+                            </TabControl>
+                            
                         </StackPanel>
                     </Grid>
                 </StackPanel>

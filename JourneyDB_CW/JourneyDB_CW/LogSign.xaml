@@ -13,15 +13,22 @@
                 <StackPanel Margin="20">
                     <TextBlock Text="Firt name" FontSize="10"/>
                     <TextBox x:Name="FirstNameTextBox" Margin="0,5"/>
+                    
                     <TextBlock Text="Last name" FontSize="10"/>
                     <TextBox x:Name="LastNameTextBox" Margin="0,5"/>
+                    
                     <TextBlock Text="Email" FontSize="10"/>
-                    <TextBox x:Name="EmailTextBox" Margin="0,5"/>
+                    <TextBox x:Name="EmailTextBox" Text="@gmail.com" 
+                             TextChanged="EmailTextBox_TextChanged" Margin="0,5"/>
+                    
                     <TextBlock Text="Password" FontSize="10"/>
                     <PasswordBox x:Name="PasswordBox" Margin="0,5"/>
+                    
                     <TextBlock Text="Birth date" FontSize="10"/>
                     <DatePicker x:Name="BirthDatePicker" Margin="0,5"/>
+                    
                     <Button x:Name="SignUpButton" Content="Sign up" Margin="0,10" Click="SignUpButton_Click"/>
+                    
                 </StackPanel>
             </TabItem>
             
@@ -29,13 +36,14 @@
             
             <TabItem Header="Log in">
                 <StackPanel Margin="20">
-                    <TextBlock Text="Firt name" FontSize="10"/>
-                    <TextBox x:Name="LogInFirstNameTextBox" Margin="0,5"/>
-                    <TextBlock Text="Last name" FontSize="10"/>
-                    <TextBox x:Name="LogInLastNameTextBox" Margin="0,5"/>
+                    <TextBlock Text="Email" FontSize="10"/>
+                    <TextBox x:Name="LogInEmailTextBox" Text="@gmail.com" 
+                             TextChanged="EmailTextBox_TextChanged" Margin="0,5"/>
+
                     <TextBlock Text="Password" FontSize="10"/>
                     <PasswordBox x:Name="LogInPasswordBox" Margin="0,5"/>
-                    <Button Content="Sign up" Margin="0,10"/>
+                    
+                    <Button x:Name="LogInButton" Content="Log in" Margin="0,10" Click="LogInButton_Click"/>
                 </StackPanel>
             </TabItem>
         

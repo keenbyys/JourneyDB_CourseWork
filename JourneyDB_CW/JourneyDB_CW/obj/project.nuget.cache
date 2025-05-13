@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "YbEuZY1BVO0=",
+  "dgSpecHash": "1O2zwocETEs=",
   "success": true,
-  "projectFilePath": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\JourneyDB_CW.csproj",
+  "projectFilePath": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\JourneyDB_CW.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\sjdro\\.nuget\\packages\\bouncycastle.cryptography\\2.5.1\\bouncycastle.cryptography.2.5.1.nupkg.sha512",
     "C:\\Users\\sjdro\\.nuget\\packages\\google.protobuf\\3.30.0\\google.protobuf.3.30.0.nupkg.sha512",

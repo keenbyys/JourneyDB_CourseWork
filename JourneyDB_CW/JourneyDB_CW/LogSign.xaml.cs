@@ -29,88 +29,184 @@ namespace JourneyDB_CW
 
         private void SignUpButton_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (!ValidateInputs(out string errorMessage))
             {
-                string firstName = FirstNameTextBox.Text;
-                string lastName = LastNameTextBox.Text;
-                string email = EmailTextBox.Text;
-                string password = PasswordBox.Password;
-                DateTime? selectedBirthDate = BirthDatePicker.SelectedDate;
-                DateTime birthDate = selectedBirthDate.Value;
-
-                List<string> emptyFields = new List<string>();
-
-                if (string.IsNullOrWhiteSpace(FirstNameTextBox.Text))
-                    emptyFields.Add("Имя");
-
-                if (string.IsNullOrWhiteSpace(LastNameTextBox.Text))
-                    emptyFields.Add("Фамилия");
-
-                if (string.IsNullOrWhiteSpace(EmailTextBox.Text))
-                    emptyFields.Add("Email");
-
-                if (string.IsNullOrWhiteSpace(PasswordBox.Password))
-                    emptyFields.Add("Пароль");
-
-                if (BirthDatePicker.SelectedDate == null)
-                    emptyFields.Add("Дата рождения");
-
-                if (emptyFields.Count > 0)
-                {
-                    string message = "Заполните следующие поля:\n- " + string.Join("\n- ", emptyFields);
-                    MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-                else
-                {
-                    RegisterUser(firstName, lastName, email, password, birthDate);
-                }
+                MessageBox.Show(errorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
-            catch
-            (Exception ex)
-            {
-                MessageBox.Show($"Ошибка: {ex.Message}");
-            }
-            
 
+            string firstName = FirstNameTextBox.Text.Trim();
+            string lastName = LastNameTextBox.Text.Trim();
+            string email = EmailTextBox.Text.Trim();
+            string password = PasswordBox.Password.Trim();
+            DateTime birthDate = BirthDatePicker.SelectedDate.Value;
 
+            RegisterUser(firstName, lastName, email, password, birthDate);
         }
 
-        private bool RegisterUser(string firstName, string lastName, string email, string password, DateTime birthDate)
+        private bool ValidateInputs(out string errorMessage)
         {
+            List<string> emptyFields = new List<string>();
+
+            // Проверка на пустые поля
+            if (string.IsNullOrWhiteSpace(FirstNameTextBox.Text))
+                emptyFields.Add("Имя");
+
+            if (string.IsNullOrWhiteSpace(LastNameTextBox.Text))
+                emptyFields.Add("Фамилия");
+
+            if (EmailTextBox.Text == "@gmail.com")
+                emptyFields.Add("Email");
+
+            if (string.IsNullOrWhiteSpace(PasswordBox.Password))
+                emptyFields.Add("Пароль");
+
+            if (BirthDatePicker.SelectedDate == null)
+                emptyFields.Add("Дата рождения");
+
+            if (emptyFields.Count > 0)
+            {
+                errorMessage = "Заполните следующие поля:\n- " + string.Join("\n- ", emptyFields);
+                return false;
+            }
+
+            errorMessage = string.Empty;
+            return true;
+        }
+
+        private bool IsEmailUnique(string email)
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+
+                    string query = "SELECT COUNT(*) FROM user WHERE email_user = @Email";
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Email", email);
+
+                        long count = (long)cmd.ExecuteScalar();
+                        return count == 0; // Если count == 0, значит email уникален
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при подключении к базе данных: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+            }
+        }
+
+        private void RegisterUser(string firstName, string lastName, string email, string password, DateTime birthDate)
+        {
+            if (!IsEmailUnique(email))
+            {
+                MessageBox.Show("Пользователь с таким email уже существует.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    string query = @"INSERT INTO user 
+                             (first_name_user, last_name_user, email_user, password_user, birth_date) 
+                             VALUES (@firstName, @lastName, @email, @password, @birthDate)";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@firstName", firstName);
+                        cmd.Parameters.AddWithValue("@lastName", lastName);
+                        cmd.Parameters.AddWithValue("@email", email);
+                        cmd.Parameters.AddWithValue("@password", password);
+                        cmd.Parameters.AddWithValue("@birthDate", birthDate.ToString("yyyy-MM-dd"));
+
+                        cmd.ExecuteNonQuery();
+                        MessageBox.Show("Регистрация успешна!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+            }
+            catch (MySqlException ex)
+            {
+                if (ex.Number == 1062)
+                    MessageBox.Show("Пользователь с таким email уже существует.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                else
+                    MessageBox.Show("Ошибка базы данных: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+
+        private bool isUpdating = false;
+
+        private void EmailTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (isUpdating) return;
+            isUpdating = true;
+
+            string suffix = "@gmail.com";
+            TextBox textBox = (TextBox)sender;
+            string input = textBox.Text;
+
+            // Если пользователь удалил @gmail.com — вернём обратно
+            if (!input.EndsWith(suffix))
+            {
+                // Удалим всё, что после "@" (если пользователь случайно ввёл свою почту)
+                int atIndex = input.IndexOf("@");
+                if (atIndex != -1)
+                    input = input.Substring(0, atIndex);
+
+                textBox.Text = input + suffix;
+                textBox.CaretIndex = input.Length;
+            }
+
+            isUpdating = false;
+        }
+
+        // LOG IN ====================================================================================================================================
+
+        private void LogInButton_Click(object sender, RoutedEventArgs e)
+        {
+            string email = LogInEmailTextBox.Text.Trim();
+            string password = LogInPasswordBox.Password.Trim();
+
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            {
+                MessageBox.Show("Введите email и пароль.");
+                return;
+            }
+
+            string connectionString = "server=localhost;database=your_db_name;uid=your_user;pwd=your_password;";
+            string query = "SELECT * FROM user WHERE email_user = @Email AND password_user = @Password";
 
             using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 conn.Open();
-
-                // Проверим, нет ли уже пользователя с таким email
-                string checkQuery = "SELECT COUNT(*) FROM user WHERE email_user = @Email";
-                using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
+                using (MySqlCommand cmd = new MySqlCommand(query, conn))
                 {
-                    checkCmd.Parameters.AddWithValue("@Email", email);
-                    long count = (long)checkCmd.ExecuteScalar();
-                    if (count > 0)
-                    {
-                        MessageBox.Show("Пользователь с таким email уже существует.");
-                        return false;
-                    }
-                }
-
-                // Добавим нового пользователя
-                string insertQuery = "INSERT INTO user (first_name_user, last_name_user, email_user, password_user, birth_date) VALUES (@FirstName, @LastName, @Email, @Password, @BirthDate)";
-                using (MySqlCommand cmd = new MySqlCommand(insertQuery, conn))
-                {
-                    cmd.Parameters.AddWithValue("@FirstName", firstName);
-                    cmd.Parameters.AddWithValue("@LastName", lastName);
                     cmd.Parameters.AddWithValue("@Email", email);
-                    cmd.Parameters.AddWithValue("@Password", password); // или хеш
-                    cmd.Parameters.AddWithValue("@birthDate", birthDate.ToString("yyyy-MM-dd"));
+                    cmd.Parameters.AddWithValue("@Password", password);
 
-                    int rows = cmd.ExecuteNonQuery();
-                    return rows > 0;
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            int userId = reader.GetInt32("id_user");
+
+                            MainWindow mainWindow = new MainWindow(userId);
+                            mainWindow.Show();
+                            this.Close();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Неверный email или пароль.");
+                        }
+                    }
                 }
             }
         }
-
     }
 }
