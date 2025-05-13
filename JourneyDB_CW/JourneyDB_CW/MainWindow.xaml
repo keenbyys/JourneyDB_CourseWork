@@ -147,13 +147,16 @@
                                 
                                 <TabItem Header="Booking">
                                     <StackPanel Margin="10">
-                                        <DataGrid x:Name="DataGrid_Booking" AutoGenerateColumns="True" Height="630"/>
+
+
+
+                                        <DataGrid x:Name="DataGrid_Booking" AutoGenerateColumns="True" Height="580"/>
                                     </StackPanel>
                                 </TabItem>
 
                                 <TabItem Header="Review">
                                     <StackPanel Margin="10">
-                                        <DataGrid x:Name="DataGrid_Review" AutoGenerateColumns="True" Height="630"/>
+                                        <DataGrid x:Name="DataGrid_Review" AutoGenerateColumns="True" Height="580"/>
                                     </StackPanel>
                                 </TabItem>
                                 

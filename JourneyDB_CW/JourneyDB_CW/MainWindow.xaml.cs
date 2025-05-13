@@ -38,7 +38,26 @@ public partial class MainWindow : Window
         {
             DataBaseHelper connectionDataBase = new DataBaseHelper();
             DataGrid.ItemsSource = null;
-            var table = connectionDataBase.SelectQuery("SELECT * FROM db_joint_journey.trips;");
+            var table = connectionDataBase.SelectQuery("SELECT " +
+                "trips.id_trip AS \"Trip ID\", " +
+                "trips.name_trip AS \"Trip Name\", " +
+                "trips.topic AS \"Topic\", " +
+                "DATE_FORMAT(trips.date, '%d.%m.%Y') AS \"Trip Date\", " +
+                "CONCAT(FORMAT(trips.price, 2), ' €') AS \"Trip Price\", " +
+                "destination.city AS \"Destination City\", " +
+                "destination.country AS \"Destination Country\", " +
+                "transport.type AS \"Transport Type\", " +
+                "CONCAT(FORMAT(transport.transport_price, 2), ' €') AS \"Transport Price\", " +
+                "accommodation.hotel_name AS \"Hotel Name\", " +
+                "accommodation.address AS \"Hotel Address\", " +
+                "accommodation.rooms_available AS \"Rooms Available\", " +
+                "CONCAT(FORMAT(accommodation.room_price, 2), ' €') AS \"Room Price\", " +
+                "CONCAT(FORMAT(trips.price + transport.transport_price + accommodation.room_price, 2), ' €') AS \"Total Cost\" " +
+                "FROM trips " +
+                "JOIN destination ON trips.id_destination = destination.id_destination " +
+                "JOIN transport ON trips.id_transport = transport.id_transport " +
+                "JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation " +
+                "ORDER BY id_trip;");
             DataGrid.ItemsSource = table.DefaultView;
         }
         catch (Exception ex)
@@ -72,7 +91,29 @@ public partial class MainWindow : Window
 
     private void LoadUserBookings()
     {
-        string query = "SELECT id_bookings, status, id_trip, booking_date FROM bookings WHERE id_user = @UserId";
+        string query = "SELECT " +
+            "id_bookings as \"ID Book\", " +
+            "status as \"Status\", " +
+            "DATE_FORMAT(booking_date, '%d.%m.%Y') as \"Book Date\", " +
+            "name_trip AS \"Trip Name\", " +
+            "topic AS \"Topic\", " +
+            "DATE_FORMAT(date, '%d.%m.%Y') AS \"Trip Date\", " +
+            "CONCAT(FORMAT(price, 2), ' €') AS \"Trip Price\", " +
+            "city AS \"Destination City\", " +
+            "country AS \"Destination Country\", " +
+            "type AS \"Transport Type\", " +
+            "CONCAT(FORMAT(transport_price, 2), ' €') AS \"Transport Price\", " +
+            "hotel_name AS \"Hotel Name\", " +
+            "address AS \"Hotel Address\", " +
+            "rooms_available AS \"Rooms Available\", " +
+            "CONCAT(FORMAT(room_price, 2), ' €') AS \"Room Price\", " +
+            "CONCAT(FORMAT(price + transport_price + room_price, 2), ' €') AS \"Total Cost\" " +
+            "FROM bookings " +
+            "JOIN trips ON bookings.id_trip = trips.id_trip " +
+            "JOIN destination ON trips.id_destination = destination.id_destination " +
+            "JOIN transport ON trips.id_transport = transport.id_transport " +
+            "JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation " +
+            "WHERE id_user = @UserId;";
         using (MySqlConnection conn = new MySqlConnection(connectionString))
         {
             conn.Open();
@@ -91,7 +132,23 @@ public partial class MainWindow : Window
 
     private void LoadUserReviews()
     {
-        string query = "SELECT id_reviews, id_trip, rating, review_date FROM reviews WHERE id_user = @UserId";
+        string query = "SELECT " +
+            "id_reviews as \"ID Reviews\", " +
+            "DATE_FORMAT(review_date, '%d.%m.%Y') as \"Review Date\", " +
+            "rating AS \"Rating\", " +
+            "name_trip AS \"Trip Name\", " +
+            "topic AS \"Topic\", " +
+            "city AS \"Destination City\", " +
+            "country AS \"Destination Country\", " +
+            "type AS \"Transport Type\", " +
+            "hotel_name AS \"Hotel Name\", " +
+            "CONCAT(FORMAT(price + transport_price + room_price, 2), ' €') AS \"Total Cost\" " +
+            "FROM reviews " +
+            "JOIN trips ON reviews.id_trip = trips.id_trip " +
+            "JOIN destination ON trips.id_destination = destination.id_destination " +
+            "JOIN transport ON trips.id_transport = transport.id_transport " +
+            "JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation " +
+            "WHERE id_user = @UserId;";
         using (MySqlConnection conn = new MySqlConnection(connectionString))
         {
             conn.Open();
