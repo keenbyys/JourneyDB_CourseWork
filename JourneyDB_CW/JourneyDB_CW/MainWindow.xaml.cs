@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using Mysqlx.Crud;
 using System.Data;
 using System.Text;
 using System.Windows;
@@ -521,6 +522,7 @@ ORDER BY
         CountryComboBox.IsEnabled = CountryCheckBox.IsChecked == true;
         PriceComboBox.IsEnabled = PriceCheckBox.IsChecked == true;
         TypeTransportComboBox.IsEnabled = TypeTransportCheckBox.IsChecked == true;
+        
     }
 
     private void FilterData()
@@ -603,4 +605,295 @@ ORDER BY
     {
         FilterData();
     }
+
+    // =======================================================================================================================================
+
+    private void AdminCheckBox_Checked(object sender, RoutedEventArgs e)
+    {
+        AdminTabItem.Visibility = Visibility.Visible;
+    }
+
+    private void AdminCheckBox_Unchecked(object sender, RoutedEventArgs e)
+    {
+        AdminTabItem.Visibility = Visibility.Collapsed;
+    }
+
+    private void LoadTableButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            DataBaseHelper helperDataBase = new DataBaseHelper();
+            if (TableComboBox.Text == "user")
+            {
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.user;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
+
+            }
+            if (TableComboBox.Text == "trips")
+            {
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.trips;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
+            }
+            if (TableComboBox.Text == "transport")
+            {
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.transport;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
+            }
+            if (TableComboBox.Text == "reviews")
+            {
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.reviews;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
+            }
+            if (TableComboBox.Text == "destination")
+            {
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.destination;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
+            }
+            if (TableComboBox.Text == "bookings")
+            {
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.bookings;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
+            }
+            if (TableComboBox.Text == "accommodation")
+            {
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.accommodation;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
+            }
+            else if (TableComboBox.Text == "")
+            {
+                MessageBox.Show("Please select a table.");
+                return;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Error: " + ex.Message);
+        }
+    }
+
+    private void AddButton_Click(object sender, RoutedEventArgs e)
+    {
+        DataBaseHelper helperDataBase = new DataBaseHelper();
+        if (TableComboBox.Text == "user")
+        {
+            var table = helperDataBase.SelectQuery(@"INSERT INTO user (first_name_user, last_name_user, email_user, password_user, birth_date) 
+                    VALUES ('first_name', 'last_name', '@gmail.com', 'password', '2025-01-01');");
+            LoadTableButton_Click(sender, e);
+        }
+
+        if (TableComboBox.Text == "trips")
+        {
+            var table = helperDataBase.SelectQuery(@"INSERT INTO trips (name_trip, topic, id_destination, date, price, id_transport, id_accommodation) 
+                    VALUES ('name_trip', 'topic', 000, 'date', 000, 000, 000);");
+            LoadTableButton_Click(sender, e);
+
+        }
+        if (TableComboBox.Text == "transport")
+        {
+            var table = helperDataBase.SelectQuery(@"INSERT INTO transport (type, transport_price) 
+                    VALUES ('type', 000);");
+            LoadTableButton_Click(sender, e);
+
+        }
+        if (TableComboBox.Text == "reviews")
+        {
+            var table = helperDataBase.SelectQuery(@"INSERT INTO reviews (id_user, id_trip, rating, review_date) 
+                    VALUES (000, 000, 'rating', 'review_date');");
+            LoadTableButton_Click(sender, e);
+        }
+        if (TableComboBox.Text == "destination")
+        {
+            var table = helperDataBase.SelectQuery(@"INSERT INTO destination (city, country) 
+                    VALUES ('city', 'country');");
+            LoadTableButton_Click(sender, e);
+        }
+        if (TableComboBox.Text == "bookings")
+        {
+            var table = helperDataBase.SelectQuery(@"INSERT INTO bookings (status, id_user, id_trip, booking_date) 
+                    VALUES ('status', 000, 000, 'booking_date');");
+            LoadTableButton_Click(sender, e);
+        }
+        if (TableComboBox.Text == "accommodation")
+        {
+            var table = helperDataBase.SelectQuery(@"INSERT INTO accommodation (hotel_name, address, rooms_available, room_price) 
+                    VALUES ('hotel_name', 'address', 000, 000);");
+            LoadTableButton_Click(sender, e);
+        }
+        else if (TableComboBox.Text == "")
+        {
+            MessageBox.Show("Please select a table.");
+            return;
+        }
+    }
+
+    private void DeleteButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            DataBaseHelper delete = new DataBaseHelper();
+
+            if (AdminDataGrid.SelectedItem is DataRowView selectedRow)
+            {
+                if (TableComboBox.Text == "user")
+                {
+                    int id_user = Convert.ToInt32(selectedRow["id_user"]);
+                    string query = $"DELETE FROM user WHERE id_user = {id_user}";
+                    delete.NoneQuery(query);
+                    LoadTableButton_Click(sender, e);
+                }
+                else if (TableComboBox.Text == "trips")
+                {
+                    int id_trip = Convert.ToInt32(selectedRow["id_trip"]);
+                    string query = $"DELETE FROM trips WHERE id_trip = {id_trip}";
+                    delete.NoneQuery(query);
+                    LoadTableButton_Click(sender, e);
+                }
+                else if (TableComboBox.Text == "transport")
+                {
+                    int id_transport = Convert.ToInt32(selectedRow["id_transport"]);
+                    string query = $"DELETE FROM transport WHERE id_transport = {id_transport}";
+                    delete.NoneQuery(query);
+                    LoadTableButton_Click(sender, e);
+                }
+                else if (TableComboBox.Text == "reviews")
+                {
+                    int id_reviews = Convert.ToInt32(selectedRow["id_reviews"]);
+                    string query = $"DELETE FROM reviews WHERE id_reviews = {id_reviews}";
+                    delete.NoneQuery(query);
+                    LoadTableButton_Click(sender, e);
+                }
+                else if (TableComboBox.Text == "destination")
+                {
+                    int id_destination = Convert.ToInt32(selectedRow["id_destination"]);
+                    string query = $"DELETE FROM destination WHERE id_destination = {id_destination}";
+                    delete.NoneQuery(query);
+                    LoadTableButton_Click(sender, e);
+                }
+                else if (TableComboBox.Text == "bookings")
+                {
+                    int id_bookings = Convert.ToInt32(selectedRow["id_bookings"]);
+                    string query = $"DELETE FROM bookings WHERE id_bookings = {id_bookings}";
+                    delete.NoneQuery(query);
+                    LoadTableButton_Click(sender, e);
+                }
+                else if (TableComboBox.Text == "accommodation")
+                {
+                    int id_accommodation = Convert.ToInt32(selectedRow["id_accommodation"]);
+                    string query = $"DELETE FROM accommodation WHERE id_accommodation = {id_accommodation}";
+                    delete.NoneQuery(query);
+                    LoadTableButton_Click(sender, e);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Error.");
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Error: " + ex.Message);
+        }
+        
+    }
+
+    private void ViewButton_Click(object sender, RoutedEventArgs e)
+    {
+        int selectIndex = AdminComboBox.SelectedIndex;
+
+        switch (selectIndex)
+        {
+            case 0:
+                string query = @"SELECT 
+                    trips.topic AS 'Topic', 
+                    COUNT(*) AS 'Confirmed Bookings Count'
+                        FROM bookings
+                        JOIN trips ON bookings.id_trip = trips.id_trip
+                        WHERE bookings.status = 'CONFIRMED'
+                        GROUP BY trips.topic
+                        ORDER BY `Confirmed Bookings Count` DESC;";
+
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    try
+                    {
+                        conn.Open();
+                        MySqlCommand cmd = new MySqlCommand(query, conn);
+                        MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        AdminDataGrid.ItemsSource = dt.DefaultView;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error: " + ex.Message);
+                    }
+                }
+                break;
+            case 1:
+                query = @"SELECT 
+                    name_trip AS 'Trip Name',
+                    COUNT(bookings.id_bookings) AS 'Confirmed Bookings Count'
+                    FROM bookings
+                        JOIN trips ON bookings.id_trip = trips.id_trip
+                    WHERE status = 'CONFIRMED'
+                    GROUP BY name_trip
+                    ORDER BY 'Confirmed Bookings Count' DESC;";
+
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    try
+                    {
+                        conn.Open();
+                        MySqlCommand cmd = new MySqlCommand(query, conn);
+                        MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        AdminDataGrid.ItemsSource = dt.DefaultView;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error: " + ex.Message);
+                    }
+                }
+                break;
+            case 2:
+                query = @"SELECT 
+                    first_name_user AS 'First Name',
+                    last_name_user AS 'Last Name',
+                    email_user AS Email,
+                    COUNT(bookings.id_bookings) AS TotalBookings
+                    FROM user
+                        LEFT JOIN bookings ON user.id_user = bookings.id_user
+                    GROUP BY first_name_user, last_name_user, email_user
+                    ORDER BY TotalBookings DESC;";
+
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                {
+                    try
+                    {
+                        conn.Open();
+                        MySqlCommand cmd = new MySqlCommand(query, conn);
+                        MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        AdminDataGrid.ItemsSource = dt.DefaultView;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error: " + ex.Message);
+                    }
+                }
+                break;
+        }
+    }
+
+
 }

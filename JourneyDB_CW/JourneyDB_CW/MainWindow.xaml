@@ -28,7 +28,7 @@
                             <CheckBox x:Name="TopicCheckBox" Content="Topic" Width="Auto" Height="Auto" Margin="10"
                                       Checked="CheckBox_Checked"
                                       Unchecked="CheckBox_Unchecked"/>
-                            <ComboBox x:Name="TopicComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 0" IsEnabled="True"
+                            <ComboBox x:Name="TopicComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 0" IsEnabled="False"
                                       SelectionChanged="ComboBox_SelectionChanged">
                                 
                             </ComboBox>
@@ -207,13 +207,55 @@
             </TabItem>
 
             <!-- ======================================================================================== -->
+            <!-- Visibility="Hidden" -->
 
-            <TabItem Header="Admin" IsEnabled="False">
+            <TabItem x:Name="AdminTabItem" Header="Admin" Visibility="Hidden">
                 <StackPanel Margin="10">
-                    <TextBlock Text="Дані користувача."/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="3*" />
+                        </Grid.ColumnDefinitions>
+
+
+                        <StackPanel Grid.Column="0" Background="#EEE" Margin="10">
+
+                            <TextBlock Text="Table:" FontWeight="Bold" Margin="10,10,10,0" FontSize="15"/>
+                            <ComboBox x:Name="TableComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 10">
+                                <ComboBoxItem Content="user" />
+                                <ComboBoxItem Content="trips" />
+                                <ComboBoxItem Content="transport"/>
+                                <ComboBoxItem Content="reviews"/>
+                                <ComboBoxItem Content="destination"/>
+                                <ComboBoxItem Content="bookings"/>
+                                <ComboBoxItem Content="accommodation"/>
+                            </ComboBox>
+                            <Button x:Name="LoadTableButton" Content="Load" Width="Auto" Height="Auto" Margin="10,0,10,50" Click="LoadTableButton_Click"/>
+
+                            <Button x:Name="AddButton" Content="Add" Width="Auto" Height="Auto" Margin="10,10,10,10" Click="AddButton_Click"/>
+                            <Button x:Name="DeleteButton" Content="Delete" Width="Auto" Height="Auto" Margin="10,0,10,10" Click="DeleteButton_Click"/>
+
+                            <TextBlock Text="Analisys:" FontWeight="Bold" Margin="10,50,10,0" FontSize="15"/>
+                            <ComboBox x:Name="AdminComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 0">
+                                <ComboBoxItem Content="Most popular destination"/>
+                                <ComboBoxItem Content="Number of organized trips"/>
+                                <ComboBoxItem Content="User activity"/>
+                            </ComboBox>
+                            <Button x:Name="ViewButton" Content="View" Width="Auto" Height="Auto" Margin="10,10,10,50" Click="ViewButton_Click"/>
+                            
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Background="#DDD" Margin="10">
+                            <DataGrid x:Name="AdminDataGrid" AutoGenerateColumns="True" Height="580"/>
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </TabItem>
             
         </TabControl>
+
+        <CheckBox x:Name="AdminCheckBox" Content="Admin" Width="Auto" Height="Auto" Margin="0,5,10,10" HorizontalAlignment="Right" IsChecked="False"
+                  Checked="AdminCheckBox_Checked"
+                  Unchecked="AdminCheckBox_Unchecked"/>
     </Grid>
 </Window>
