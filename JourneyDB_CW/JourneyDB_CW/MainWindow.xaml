@@ -45,10 +45,13 @@
 
                             </ComboBox>
 
+                            <Button x:Name="BookingButton" Content="Book" Width="Auto" Height="Auto" Margin="10,10,10,10" Click="BookingButton_Click"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Background="#DDD" Margin="10">
-                            <DataGrid x:Name="DataGrid" AutoGenerateColumns="True" Height="615"/>
+                            <DataGrid x:Name="DataGrid" AutoGenerateColumns="True" 
+                                      SelectionMode="Single"
+                                      Height="615"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -72,54 +75,55 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="1.6*" />
+                                    <ColumnDefinition Width="2.3*" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Text="First name:" FontWeight="Bold" Margin="10,10,10,0" FontSize="20" Grid.Column="0"/>
-                                <TextBlock x:Name="FirstName" Text="—" Margin="10,10,10,0" FontSize="20" Grid.Column="1"/>
+                                <TextBlock Text="First name:" FontWeight="Bold" Margin="10,10,10,0" FontSize="15" Grid.Column="0"/>
+                                <TextBlock x:Name="FirstName" Text="—" Margin="10,10,10,0" FontSize="15" Grid.Column="1"/>
 
                             </Grid>
 
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="1.6*" />
+                                    <ColumnDefinition Width="2.3*" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Text="Last name:" FontWeight="Bold" Margin="10,10,10,0" FontSize="20" Grid.Column="0"/>
-                                <TextBlock x:Name="LastName" Text="—" Margin="10,10,10,0" FontSize="20" Grid.Column="1"/>
+                                <TextBlock Text="Last name:" FontWeight="Bold" Margin="10,10,10,0" FontSize="15" Grid.Column="0"/>
+                                <TextBlock x:Name="LastName" Text="—" Margin="10,10,10,0" FontSize="15" Grid.Column="1"/>
 
                             </Grid>
 
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="1.6*" />
+                                    <ColumnDefinition Width="2.3*" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Text="Email:" FontWeight="Bold" Margin="10,10,10,0" FontSize="20" Grid.Column="0"/>
-                                <TextBlock x:Name="Email" Text="—" Margin="10,10,10,0" FontSize="20" Grid.Column="1"/>
+                                <TextBlock Text="Email:" FontWeight="Bold" Margin="10,10,10,0" FontSize="15" Grid.Column="0"/>
+                                <TextBlock x:Name="Email" Text="—" Margin="10,10,10,0" FontSize="15" Grid.Column="1"/>
 
                             </Grid>
 
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="1.6*" />
+                                    <ColumnDefinition Width="2.3*" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Text="Date birth:" FontWeight="Bold" Margin="10,10,10,0" FontSize="20" Grid.Column="0"/>
-                                <TextBlock x:Name="DateBirth" Text="—" Margin="10,10,10,0" FontSize="20" Grid.Column="1"/>
+                                <TextBlock Text="Date birth:" FontWeight="Bold" Margin="10,10,10,0" FontSize="15" Grid.Column="0"/>
+                                <TextBlock x:Name="DateBirth" Text="—" Margin="10,10,10,0" FontSize="15" Grid.Column="1"/>
 
                             </Grid>
-                            
-                            <TextBlock Text="Search:" FontWeight="Bold" Margin="10,50,10,0" FontSize="20"/>
-                            <TextBox x:Name="SearchTextBox1" Width="Auto" Margin="10,5,10,10" FontSize="20"/>
+
+                            <TextBlock Text="Search:" FontWeight="Bold" Margin="10,50,10,0" FontSize="15"/>
+                            <TextBox x:Name="SearchTextBox1" Width="Auto" Margin="10,5,10,10" FontSize="15"
+                                     TextChanged="SearchTextBox1_TextChanged"/>
                             <Button x:Name="SearchButton1" Content="Search" Width="Auto" Height="Auto" Margin="10,0,10,10"/>
 
-                            
 
-                            <TextBlock Text="Review:" FontWeight="Bold" Margin="10,50,10,0" FontSize="20"/>
+
+                            <TextBlock Text="Review:" FontWeight="Bold" Margin="10,50,10,0" FontSize="15"/>
                             
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -138,7 +142,10 @@
 
                             </Grid>
 
-                            <Button x:Name="AddReviewButton" Content="Add review" Width="Auto" Height="Auto" Margin="10,0,10,10"/>
+                            <Button x:Name="AddReviewButton" Content="Add review" Width="Auto" Height="Auto" Margin="10,0,10,10" Click="AddReviewButton_Click"/>
+                            <Button x:Name="DeleteReviewButton" Content="Delete review" Width="Auto" Height="Auto" Margin="10,0,10,10" Click="DeleteReviewButton_Click"/>
+                            <Button x:Name="CancelBookButton" Content="Cancel booking" Width="Auto" Height="Auto" Margin="10,20,10,10" Click="CancelBookButton_Click"/>
+                            <Button x:Name="DeleteBookButton" Content="Delete booking" Width="Auto" Height="Auto" Margin="10,0,10,10" Click="DeleteBookButton_Click"/>
 
                         </StackPanel>
 
@@ -156,7 +163,27 @@
 
                                 <TabItem Header="Review">
                                     <StackPanel Margin="10">
-                                        <DataGrid x:Name="DataGrid_Review" AutoGenerateColumns="True" Height="580"/>
+                                        <DataGrid x:Name="DataGrid_Review" AutoGenerateColumns="True" IsReadOnly="True" Height="580">
+                                            <DataGrid.Resources>
+                                                <Style TargetType="DataGridRow">
+                                                    <Style.Triggers>
+
+                                                        <DataTrigger Binding="{Binding [status]}" Value="CONFIRMED">
+                                                            <Setter Property="Background" Value="LightGreen"/>
+                                                        </DataTrigger>
+
+                                                        <DataTrigger Binding="{Binding [status]}" Value="WAIT">
+                                                            <Setter Property="Background" Value="LightGray"/>
+                                                        </DataTrigger>
+
+                                                        <DataTrigger Binding="{Binding [status]}" Value="CANCELED">
+                                                            <Setter Property="Background" Value="Salmon"/>
+                                                        </DataTrigger>
+
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </DataGrid.Resources>
+                                        </DataGrid>
                                     </StackPanel>
                                 </TabItem>
                                 
