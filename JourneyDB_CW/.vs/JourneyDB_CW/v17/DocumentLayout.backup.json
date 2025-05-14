@@ -50,8 +50,7 @@
               "RelativeToolTip": "JourneyDB_CW\\LogSign.xaml.cs",
               "ViewState": "AgIAAGYAAAAAAAAAAAA6wKoAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-13T11:44:53.829Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-13T11:44:53.829Z"
             },
             {
               "$type": "Document",
@@ -62,8 +61,7 @@
               "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\LogSign.xaml",
               "RelativeToolTip": "JourneyDB_CW\\LogSign.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-05-13T10:43:08.845Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-13T10:43:08.845Z"
             },
             {
               "$type": "Document",
@@ -120,9 +118,9 @@
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "JourneyDB_CW\\MainWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\MainWindow.xaml.cs",
-              "RelativeToolTip": "JourneyDB_CW\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAKcBAAAAAAAAAAAAANkBAAAgAAAAAAAAAA==",
+              "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\MainWindow.xaml.cs*",
+              "RelativeToolTip": "JourneyDB_CW\\MainWindow.xaml.cs*",
+              "ViewState": "AgIAADMAAAAAAAAAAAAAACUAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-12T19:11:00.385Z",
               "EditorCaption": ""

@@ -30,41 +30,56 @@ public partial class MainWindow : Window
         LoadUserData();
         LoadUserBookings();
         LoadUserReviews();
+
+        LoadUniqueValues("SELECT DISTINCT topic FROM trips ORDER BY topic ASC", TopicComboBox, "topic");
+        LoadUniqueValues("SELECT DISTINCT country FROM destination ORDER BY country ASC", CountryComboBox, "country");
+        LoadUniqueValues("SELECT DISTINCT price FROM trips ORDER BY price ASC", PriceComboBox, "price");
+        LoadUniqueValues("SELECT DISTINCT type FROM transport ORDER BY type ASC", TypeTransportComboBox, "type");
+        FilterData();
     }
 
 
 
     public void LoadDataBase()
     {
-        try
+        string query = @"SELECT 
+    trips.id_trip AS ""Trip ID"",
+    trips.name_trip AS ""Trip Name"",
+    trips.topic AS ""Topic"",
+    DATE_FORMAT(trips.date, '%d.%m.%Y') AS ""Trip Date"",
+    CONCAT(FORMAT(trips.price, 2), ' €') AS ""Trip Price"",
+    destination.city AS ""Destination City"",
+    destination.country AS ""Destination Country"",
+    transport.type AS ""Transport Type"",
+    CONCAT(FORMAT(transport.transport_price, 2), ' €') AS ""Transport Price"",
+    accommodation.hotel_name AS ""Hotel Name"",
+    accommodation.address AS ""Hotel Address"",
+    accommodation.rooms_available AS ""Rooms Available"",
+    CONCAT(FORMAT(accommodation.room_price, 2), ' €') AS ""Room Price"",
+    CONCAT(FORMAT(trips.price + transport.transport_price + accommodation.room_price, 2), ' €') AS ""Total Cost""
+FROM 
+    trips
+JOIN 
+    destination ON trips.id_destination = destination.id_destination
+JOIN 
+    transport ON trips.id_transport = transport.id_transport
+JOIN 
+    accommodation ON trips.id_accommodation = accommodation.id_accommodation
+ORDER BY 
+    id_trip;";
+
+        using (MySqlConnection conn = new MySqlConnection(connectionString))
         {
-            DataBaseHelper connectionDataBase = new DataBaseHelper();
-            DataGrid.ItemsSource = null;
-            var table = connectionDataBase.SelectQuery("SELECT " +
-                "trips.id_trip AS \"Trip ID\", " +
-                "trips.name_trip AS \"Trip Name\", " +
-                "trips.topic AS \"Topic\", " +
-                "DATE_FORMAT(trips.date, '%d.%m.%Y') AS \"Trip Date\", " +
-                "CONCAT(FORMAT(trips.price, 2), ' €') AS \"Trip Price\", " +
-                "destination.city AS \"Destination City\", " +
-                "destination.country AS \"Destination Country\", " +
-                "transport.type AS \"Transport Type\", " +
-                "CONCAT(FORMAT(transport.transport_price, 2), ' €') AS \"Transport Price\", " +
-                "accommodation.hotel_name AS \"Hotel Name\", " +
-                "accommodation.address AS \"Hotel Address\", " +
-                "accommodation.rooms_available AS \"Rooms Available\", " +
-                "CONCAT(FORMAT(accommodation.room_price, 2), ' €') AS \"Room Price\", " +
-                "CONCAT(FORMAT(trips.price + transport.transport_price + accommodation.room_price, 2), ' €') AS \"Total Cost\" " +
-                "FROM trips " +
-                "JOIN destination ON trips.id_destination = destination.id_destination " +
-                "JOIN transport ON trips.id_transport = transport.id_transport " +
-                "JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation " +
-                "ORDER BY id_trip;");
-            DataGrid.ItemsSource = table.DefaultView;
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show("Error: " + ex.Message);
+            conn.Open();
+            using (MySqlCommand cmd = new MySqlCommand(query, conn))
+            {
+                using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                {
+                    DataTable baseTable = new DataTable();
+                    adapter.Fill(baseTable);
+                    DataGrid.ItemsSource = baseTable.DefaultView;
+                }
+            }
         }
     }
 
@@ -433,32 +448,31 @@ public partial class MainWindow : Window
     {
         string searchText = SearchTextBox1.Text.Trim();
 
-        string query = @"
-SELECT 
-    id_bookings AS 'ID Book', 
-    status AS 'Status', 
-    trips.id_trip AS 'Trip ID', 
-    booking_date AS 'Book Date', 
-    name_trip AS 'Trip Name', 
-    topic AS 'Topic', 
-    DATE_FORMAT(date, '%d.%m.%Y') AS 'Trip Date', 
-    CONCAT(FORMAT(price, 2), ' €') AS 'Trip Price', 
-    city AS 'Destination City', 
-    country AS 'Destination Country', 
-    type AS 'Transport Type', 
-    CONCAT(FORMAT(transport_price, 2), ' €') AS 'Transport Price', 
-    hotel_name AS 'Hotel Name', 
-    address AS 'Hotel Address', 
-    rooms_available AS 'Rooms Available', 
-    CONCAT(FORMAT(room_price, 2), ' €') AS 'Room Price', 
-    CONCAT(FORMAT(price + transport_price + room_price, 2), ' €') AS 'Total Cost'
-FROM bookings
-JOIN trips ON bookings.id_trip = trips.id_trip
-JOIN destination ON trips.id_destination = destination.id_destination
-JOIN transport ON trips.id_transport = transport.id_transport
-JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation
-WHERE id_user = @UserId AND name_trip LIKE @SearchText
-ORDER BY booking_date DESC;";
+        string query = @"SELECT 
+            id_bookings AS 'ID Book', 
+            status AS 'Status', 
+            trips.id_trip AS 'Trip ID', 
+            booking_date AS 'Book Date', 
+            name_trip AS 'Trip Name', 
+            topic AS 'Topic', 
+            DATE_FORMAT(date, '%d.%m.%Y') AS 'Trip Date', 
+            CONCAT(FORMAT(price, 2), ' €') AS 'Trip Price', 
+            city AS 'Destination City', 
+            country AS 'Destination Country', 
+            type AS 'Transport Type', 
+            CONCAT(FORMAT(transport_price, 2), ' €') AS 'Transport Price', 
+            hotel_name AS 'Hotel Name', 
+            address AS 'Hotel Address', 
+            rooms_available AS 'Rooms Available', 
+            CONCAT(FORMAT(room_price, 2), ' €') AS 'Room Price', 
+            CONCAT(FORMAT(price + transport_price + room_price, 2), ' €') AS 'Total Cost'
+                FROM bookings
+                JOIN trips ON bookings.id_trip = trips.id_trip
+                JOIN destination ON trips.id_destination = destination.id_destination
+                JOIN transport ON trips.id_transport = transport.id_transport
+                JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation
+            WHERE id_user = @UserId AND name_trip LIKE @SearchText
+            ORDER BY booking_date DESC;";
 
         using (MySqlConnection conn = new MySqlConnection(connectionString))
         {
@@ -474,5 +488,119 @@ ORDER BY booking_date DESC;";
                 DataGrid_Booking.ItemsSource = dt.DefaultView;
             }
         }
+    }
+
+    private void LoadUniqueValues(string sql, ComboBox comboBox, string displayMember)
+    {
+        using (var connection = new MySqlConnection(connectionString))
+        {
+            var adapter = new MySqlDataAdapter(sql, connection);
+            var dt = new DataTable();
+            adapter.Fill(dt);
+            comboBox.ItemsSource = dt.DefaultView;
+            comboBox.DisplayMemberPath = displayMember;
+            comboBox.SelectedValuePath = displayMember;
+        }
+    }
+
+    private void CheckBox_Checked(object sender, RoutedEventArgs e)
+    {
+        ToggleComboBoxes();
+        FilterData();
+    }
+
+    private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+    {
+        ToggleComboBoxes();
+        FilterData();
+    }
+
+    private void ToggleComboBoxes()
+    {
+        TopicComboBox.IsEnabled = TopicCheckBox.IsChecked == true;
+        CountryComboBox.IsEnabled = CountryCheckBox.IsChecked == true;
+        PriceComboBox.IsEnabled = PriceCheckBox.IsChecked == true;
+        TypeTransportComboBox.IsEnabled = TypeTransportCheckBox.IsChecked == true;
+    }
+
+    private void FilterData()
+    {
+        string query = @"
+        SELECT 
+            trips.id_trip AS 'Trip ID',
+            trips.name_trip AS 'Trip Name',
+            trips.topic AS 'Topic',
+            DATE_FORMAT(trips.date, '%d.%m.%Y') AS 'Trip Date',
+            CONCAT(FORMAT(trips.price, 2), ' €') AS 'Trip Price',
+            destination.city AS 'Destination City',
+            destination.country AS 'Destination Country',
+            transport.type AS 'Transport Type',
+            CONCAT(FORMAT(transport.transport_price, 2), ' €') AS 'Transport Price',
+            accommodation.hotel_name AS 'Hotel Name',
+            accommodation.address AS 'Hotel Address',
+            accommodation.rooms_available AS 'Rooms Available',
+            CONCAT(FORMAT(accommodation.room_price, 2), ' €') AS 'Room Price',
+            CONCAT(FORMAT(trips.price + transport.transport_price + accommodation.room_price, 2), ' €') AS 'Total Cost'
+        FROM 
+            trips
+        JOIN 
+            destination ON trips.id_destination = destination.id_destination
+        JOIN 
+            transport ON trips.id_transport = transport.id_transport
+        JOIN 
+            accommodation ON trips.id_accommodation = accommodation.id_accommodation
+        WHERE 1=1";
+
+        var parameters = new List<MySqlParameter>();
+
+        if (TopicCheckBox.IsChecked == true && TopicComboBox.SelectedValue != null)
+        {
+            query += " AND trips.topic = @topic";
+            parameters.Add(new MySqlParameter("@topic", TopicComboBox.SelectedValue));
+        }
+
+        if (CountryCheckBox.IsChecked == true && CountryComboBox.SelectedValue != null)
+        {
+            query += " AND destination.country = @country";
+            parameters.Add(new MySqlParameter("@country", CountryComboBox.SelectedValue));
+        }
+
+        if (PriceCheckBox.IsChecked == true && PriceComboBox.SelectedValue != null)
+        {
+            query += " AND trips.price = @price";
+            parameters.Add(new MySqlParameter("@price", PriceComboBox.SelectedValue));
+        }
+
+        if (TypeTransportCheckBox.IsChecked == true && TypeTransportComboBox.SelectedValue != null)
+        {
+            query += " AND transport.type = @type";
+            parameters.Add(new MySqlParameter("@type", TypeTransportComboBox.SelectedValue));
+        }
+
+        if (!string.IsNullOrWhiteSpace(SearchTextBox.Text))
+        {
+            query += " AND trips.name_trip LIKE @searchText";
+            parameters.Add(new MySqlParameter("@searchText", "%" + SearchTextBox.Text + "%"));
+        }
+
+        using (var connection = new MySqlConnection(connectionString))
+        {
+            var command = new MySqlCommand(query, connection);
+            command.Parameters.AddRange(parameters.ToArray());
+            var adapter = new MySqlDataAdapter(command);
+            var dt = new DataTable();
+            adapter.Fill(dt);
+            DataGrid.ItemsSource = dt.DefaultView;
+        }
+    }
+
+    private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        FilterData();
+    }
+
+    private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        FilterData();
     }
 }

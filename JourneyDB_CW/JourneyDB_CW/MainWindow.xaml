@@ -22,26 +22,38 @@
 
                         <StackPanel Grid.Column="0" Background="#EEE" Margin="10">
                             <TextBlock Text="Search" FontWeight="Bold" Margin="10,10,10,0" FontSize="20"/>
-                            <TextBox x:Name="SearchTextBox" Width="Auto" Margin="10,5,10,10" FontSize="20"/>
-                            <Button x:Name="SearchButton" Content="Search" Width="Auto" Height="Auto" Margin="10,0,10,10"/>
+                            <TextBox x:Name="SearchTextBox" Width="Auto" Margin="10,5,10,10" FontSize="20"
+                                     TextChanged="SearchTextBox_TextChanged"/>
 
-                            <CheckBox x:Name="TopicCheckBox" Content="Topic" Width="Auto" Height="Auto" Margin="10"/>
-                            <ComboBox x:Name="TopicComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 0" IsEnabled="False">
+                            <CheckBox x:Name="TopicCheckBox" Content="Topic" Width="Auto" Height="Auto" Margin="10"
+                                      Checked="CheckBox_Checked"
+                                      Unchecked="CheckBox_Unchecked"/>
+                            <ComboBox x:Name="TopicComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 0" IsEnabled="True"
+                                      SelectionChanged="ComboBox_SelectionChanged">
                                 
                             </ComboBox>
 
-                            <CheckBox x:Name="CountryCheckBox" Content="Country" Width="Auto" Height="Auto" Margin="10"/>
-                            <ComboBox x:Name="CountryComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 0" IsEnabled="False">
+                            <CheckBox x:Name="CountryCheckBox" Content="Country" Width="Auto" Height="Auto" Margin="10"
+                                      Checked="CheckBox_Checked"
+                                      Unchecked="CheckBox_Unchecked"/>
+                            <ComboBox x:Name="CountryComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 0" IsEnabled="False"
+                                      SelectionChanged="ComboBox_SelectionChanged">
 
                             </ComboBox>
 
-                            <CheckBox x:Name="PriceCheckBox" Content="Price" Width="Auto" Height="Auto" Margin="10"/>
-                            <ComboBox x:Name="PriceComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 0" IsEnabled="False">
+                            <CheckBox x:Name="PriceCheckBox" Content="Price" Width="Auto" Height="Auto" Margin="10"
+                                      Checked="CheckBox_Checked"
+                                      Unchecked="CheckBox_Unchecked"/>
+                            <ComboBox x:Name="PriceComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 0" IsEnabled="False"
+                                      SelectionChanged="ComboBox_SelectionChanged">
 
                             </ComboBox>
 
-                            <CheckBox x:Name="TypeTransportCheckBox" Content="Type of transport" Width="Auto" Height="Auto" Margin="10"/>
-                            <ComboBox x:Name="TypeTransportComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 0" IsEnabled="False">
+                            <CheckBox x:Name="TypeTransportCheckBox" Content="Type of transport" Width="Auto" Height="Auto" Margin="10"
+                                      Checked="CheckBox_Checked"
+                                      Unchecked="CheckBox_Unchecked"/>
+                            <ComboBox x:Name="TypeTransportComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 0" IsEnabled="False"
+                                      SelectionChanged="ComboBox_SelectionChanged">
 
                             </ComboBox>
 
@@ -119,7 +131,6 @@
                             <TextBlock Text="Search:" FontWeight="Bold" Margin="10,50,10,0" FontSize="15"/>
                             <TextBox x:Name="SearchTextBox1" Width="Auto" Margin="10,5,10,10" FontSize="15"
                                      TextChanged="SearchTextBox1_TextChanged"/>
-                            <Button x:Name="SearchButton1" Content="Search" Width="Auto" Height="Auto" Margin="10,0,10,10"/>
 
 
 
