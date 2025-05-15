@@ -58,6 +58,7 @@
                             </ComboBox>
 
                             <Button x:Name="BookingButton" Content="Book" Width="Auto" Height="Auto" Margin="10,10,10,10" Click="BookingButton_Click"/>
+                            <Button x:Name="ExitMainButton" Content="Exit" Width="Auto" Height="Auto" Margin="10,10,10,10" Click="ExitMainButton_Click"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Background="#DDD" Margin="10">
@@ -209,7 +210,7 @@
             <!-- ======================================================================================== -->
             <!-- Visibility="Hidden" -->
 
-            <TabItem x:Name="AdminTabItem" Header="Admin" Visibility="Hidden">
+            <TabItem x:Name="AdminTabItem" Header="Admin" >
                 <StackPanel Margin="10">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -246,7 +247,9 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Background="#DDD" Margin="10">
-                            <DataGrid x:Name="AdminDataGrid" AutoGenerateColumns="True" Height="580"/>
+                            <DataGrid x:Name="AdminDataGrid" AutoGenerateColumns="True" Height="580"
+                                      IsReadOnly="False"
+                                      CellEditEnding="AdminDataGrid_CellEditEnding"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>

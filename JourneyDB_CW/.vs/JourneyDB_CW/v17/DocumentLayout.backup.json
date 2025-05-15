@@ -3,20 +3,24 @@
   "WorkspaceRootPath": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\logsign.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\logsign.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\logsign.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\logsign.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\logsign.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
@@ -35,19 +39,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "App.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\App.xaml.cs",
+              "RelativeDocumentMoniker": "JourneyDB_CW\\App.xaml.cs",
+              "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\App.xaml.cs",
+              "RelativeToolTip": "JourneyDB_CW\\App.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-15T10:33:27.314Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "JourneyDB_CW\\MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\MainWindow.xaml.cs",
               "RelativeToolTip": "JourneyDB_CW\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAHwDAAARAAAAAAAAAA==",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAAACsAAABHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-12T19:11:00.385Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 2,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\MainWindow.xaml",
               "RelativeDocumentMoniker": "JourneyDB_CW\\MainWindow.xaml",
@@ -59,7 +76,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "LogSign.xaml.cs",
               "DocumentMoniker": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\LogSign.xaml.cs",
               "RelativeDocumentMoniker": "JourneyDB_CW\\LogSign.xaml.cs",
@@ -72,7 +89,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "LogSign.xaml",
               "DocumentMoniker": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\LogSign.xaml",
               "RelativeDocumentMoniker": "JourneyDB_CW\\LogSign.xaml",

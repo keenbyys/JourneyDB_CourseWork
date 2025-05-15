@@ -1,6 +1,8 @@
 ﻿using MySql.Data.MySqlClient;
 using Mysqlx.Crud;
 using System.Data;
+using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -210,114 +212,141 @@ ORDER BY
 
     private void BookingButton_Click(object sender, RoutedEventArgs e)
     {
-        if (DataGrid.SelectedItem is DataRowView selectedRow)
-        {
-            int tripId;
-            try
-            {
-                tripId = Convert.ToInt32(selectedRow["Trip ID"]); // убедись, что колонка называется именно так
-            }
-            catch
-            {
-                MessageBox.Show("Не вдалося отримати ID подорожі.");
-                return;
-            }
+        MessageBoxResult result = MessageBox.Show(
+        "Are you sure you want to book?",
+        "Confirmation of action",
+        MessageBoxButton.YesNo,
+        MessageBoxImage.Question);
 
-            string checkQuery = @"SELECT COUNT(*) FROM bookings 
+        if (result == MessageBoxResult.Yes)
+        {
+            if (DataGrid.SelectedItem is DataRowView selectedRow)
+            {
+                int tripId;
+                try
+                {
+                    tripId = Convert.ToInt32(selectedRow["Trip ID"]); // убедись, что колонка называется именно так
+                }
+                catch
+                {
+                    MessageBox.Show("Не вдалося отримати ID подорожі.");
+                    return;
+                }
+
+                string checkQuery = @"SELECT COUNT(*) FROM bookings 
                               WHERE id_user = @id_user AND id_trip = @id_trip 
                               AND status IN ('CONFIRMED', 'WAIT')";
 
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
-            {
-                checkCmd.Parameters.AddWithValue("@id_user", currentUserId);
-                checkCmd.Parameters.AddWithValue("@id_trip", tripId);
-
-                try
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
                 {
-                    conn.Open();
-                    int existingCount = Convert.ToInt32(checkCmd.ExecuteScalar());
+                    checkCmd.Parameters.AddWithValue("@id_user", currentUserId);
+                    checkCmd.Parameters.AddWithValue("@id_trip", tripId);
 
-                    if (existingCount > 0)
+                    try
                     {
-                        MessageBox.Show("Ви вже забронювали цю подорож (CONFIRMED або WAIT).");
-                        return;
-                    }
+                        conn.Open();
+                        int existingCount = Convert.ToInt32(checkCmd.ExecuteScalar());
 
-                    string status = GetRandomStatus();
-                    DateTime bookingDate = DateTime.Now;
+                        if (existingCount > 0)
+                        {
+                            MessageBox.Show("Ви вже забронювали цю подорож (CONFIRMED або WAIT).");
+                            return;
+                        }
 
-                    string insertQuery = @"INSERT INTO bookings (id_user, id_trip, status, booking_date)
+                        string status = GetRandomStatus();
+                        DateTime bookingDate = DateTime.Now;
+
+                        string insertQuery = @"INSERT INTO bookings (id_user, id_trip, status, booking_date)
                                        VALUES (@id_user, @id_trip, @status, @booking_date)";
 
-                    using (MySqlCommand insertCmd = new MySqlCommand(insertQuery, conn))
-                    {
-                        insertCmd.Parameters.AddWithValue("@id_user", currentUserId);
-                        insertCmd.Parameters.AddWithValue("@id_trip", tripId);
-                        insertCmd.Parameters.AddWithValue("@status", status);
-                        insertCmd.Parameters.AddWithValue("@booking_date", bookingDate);
+                        using (MySqlCommand insertCmd = new MySqlCommand(insertQuery, conn))
+                        {
+                            insertCmd.Parameters.AddWithValue("@id_user", currentUserId);
+                            insertCmd.Parameters.AddWithValue("@id_trip", tripId);
+                            insertCmd.Parameters.AddWithValue("@status", status);
+                            insertCmd.Parameters.AddWithValue("@booking_date", bookingDate);
 
-                        insertCmd.ExecuteNonQuery();
-                        MessageBox.Show($"Бронювання створено зі статусом: {status}");
-                        LoadUserBookings();
+                            insertCmd.ExecuteNonQuery();
+                            MessageBox.Show($"Бронювання створено зі статусом: {status}");
+                            LoadUserBookings();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Помилка: " + ex.Message);
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Помилка: " + ex.Message);
-                }
+            }
+            else
+            {
+                MessageBox.Show("Будь ласка, виберіть подорож із таблиці.");
             }
         }
         else
         {
-            MessageBox.Show("Будь ласка, виберіть подорож із таблиці.");
+            return;
         }
-
     }
 
     private void AddReviewButton_Click(object sender, RoutedEventArgs e)
     {
-        if (DataGrid_Booking.SelectedItem is DataRowView selectedRow)
+        MessageBoxResult result = MessageBox.Show(
+        "Are you sure you want to add review?",
+        "Confirmation of action",
+        MessageBoxButton.YesNo,
+        MessageBoxImage.Question);
+
+        if (result == MessageBoxResult.Yes)
         {
-            int tripId = Convert.ToInt32(selectedRow["Trip ID"]);
-            DateTime reviewDate = DateTime.Now;
-                        
-            string insertQuery = @"INSERT INTO reviews (id_user, id_trip, review_date, rating)
+            if (DataGrid_Booking.SelectedItem is DataRowView selectedRow)
+            {
+                int tripId = Convert.ToInt32(selectedRow["Trip ID"]);
+                DateTime reviewDate = DateTime.Now;
+
+                string insertQuery = @"INSERT INTO reviews (id_user, id_trip, review_date, rating)
                                VALUES (@id_user, @id_trip, @review_date, @rating)";
 
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            using (MySqlCommand cmd = new MySqlCommand(insertQuery, conn))
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (MySqlCommand cmd = new MySqlCommand(insertQuery, conn))
+                {
+                    string rating = Convert.ToString(GetSelectedRating());
+
+                    if (rating == "0")
+                    {
+                        MessageBox.Show("Будь ласка, виберіть рейтинг.");
+                        return;
+                    }
+
+                    cmd.Parameters.AddWithValue("@id_user", currentUserId);
+                    cmd.Parameters.AddWithValue("@id_trip", tripId);
+                    cmd.Parameters.AddWithValue("@review_date", reviewDate);
+                    cmd.Parameters.AddWithValue("@rating", rating);
+
+                    try
+                    {
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                        MessageBox.Show("Review створено!");
+                        LoadUserReviews();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Помилка: " + ex.Message);
+                    }
+                }
+            }
+            else
             {
-                string rating = Convert.ToString(GetSelectedRating());
-
-                if (rating == "0")
-                {
-                    MessageBox.Show("Будь ласка, виберіть рейтинг.");
-                    return;
-                }
-
-                cmd.Parameters.AddWithValue("@id_user", currentUserId);
-                cmd.Parameters.AddWithValue("@id_trip", tripId);
-                cmd.Parameters.AddWithValue("@review_date", reviewDate);
-                cmd.Parameters.AddWithValue("@rating", rating);
-
-                try
-                {
-                    conn.Open();
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("Review створено!");
-                    LoadUserReviews();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Помилка: " + ex.Message);
-                }
+                MessageBox.Show("Будь ласка, виберіть подорож із таблиці.");
             }
         }
         else
         {
-            MessageBox.Show("Будь ласка, виберіть подорож із таблиці.");
+            return;
         }
+
+        
     }
 
     private int GetSelectedRating()
@@ -350,99 +379,141 @@ ORDER BY
 
     private void DeleteReviewButton_Click(object sender, RoutedEventArgs e)
     {
-        if (DataGrid_Review.SelectedItem is DataRowView selectedRow)
+        MessageBoxResult result = MessageBox.Show(
+        "Are you sure you want to delete review?",
+        "Confirmation of action",
+        MessageBoxButton.YesNo,
+        MessageBoxImage.Question);
+
+        if (result == MessageBoxResult.Yes)
         {
-            int reviewId = Convert.ToInt32(selectedRow["ID Reviews"]);
-            string deleteQuery = "DELETE FROM reviews WHERE id_reviews = @id_reviews";
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            using (MySqlCommand cmd = new MySqlCommand(deleteQuery, conn))
+            if (DataGrid_Review.SelectedItem is DataRowView selectedRow)
             {
-                cmd.Parameters.AddWithValue("@id_reviews", reviewId);
+                int reviewId = Convert.ToInt32(selectedRow["ID Reviews"]);
+                string deleteQuery = "DELETE FROM reviews WHERE id_reviews = @id_reviews";
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
+                using (MySqlCommand cmd = new MySqlCommand(deleteQuery, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id_reviews", reviewId);
+                    try
+                    {
+                        conn.Open();
+                        cmd.ExecuteNonQuery();
+                        LoadUserReviews();
+                        MessageBox.Show("Review видалено!");
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Помилка: " + ex.Message);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Будь ласка, виберіть відгук із таблиці.");
+            }
+        }
+        else
+        {
+            return;
+        }
+    }
+
+        
+
+    private void CancelBookButton_Click(object sender, RoutedEventArgs e)
+    {
+        MessageBoxResult result = MessageBox.Show(
+        "Are you sure you want to cancel book?",
+        "Confirmation of action",
+        MessageBoxButton.YesNo,
+        MessageBoxImage.Question);
+        
+        if (result == MessageBoxResult.Yes)
+        {
+            if (DataGrid_Booking.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a booking to cancel.");
+                return;
+            }
+
+            DataRowView selectedRow = (DataRowView)DataGrid_Booking.SelectedItem;
+            string currentStatus = selectedRow["Status"].ToString();
+            int bookingId = Convert.ToInt32(selectedRow["ID Book"]);
+
+            if (currentStatus == "CANCELED")
+            {
+                MessageBox.Show("This booking has already been canceled.");
+                return;
+            }
+
+            string query = "UPDATE bookings SET status = 'CANCELED' WHERE id_bookings = @bookingId";
+
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
                 try
                 {
                     conn.Open();
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@bookingId", bookingId);
                     cmd.ExecuteNonQuery();
-                    LoadUserReviews();
-                    MessageBox.Show("Review видалено!");
+                    LoadUserBookings();
+                    MessageBox.Show("Booking successfully canceled.");
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Помилка: " + ex.Message);
+                    MessageBox.Show("Error canceling booking: " + ex.Message);
                 }
             }
         }
         else
         {
-            MessageBox.Show("Будь ласка, виберіть відгук із таблиці.");
-        }
-    }
-
-    private void CancelBookButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (DataGrid_Booking.SelectedItem == null)
-        {
-            MessageBox.Show("Please select a booking to cancel.");
             return;
         }
 
-        DataRowView selectedRow = (DataRowView)DataGrid_Booking.SelectedItem;
-        string currentStatus = selectedRow["Status"].ToString();
-        int bookingId = Convert.ToInt32(selectedRow["ID Book"]);
-
-        if (currentStatus == "CANCELED")
-        {
-            MessageBox.Show("This booking has already been canceled.");
-            return;
-        }
-
-        string query = "UPDATE bookings SET status = 'CANCELED' WHERE id_bookings = @bookingId";
-
-        using (MySqlConnection conn = new MySqlConnection(connectionString))
-        {
-            try
-            {
-                conn.Open();
-                MySqlCommand cmd = new MySqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@bookingId", bookingId);
-                cmd.ExecuteNonQuery();
-                LoadUserBookings();
-                MessageBox.Show("Booking successfully canceled.");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error canceling booking: " + ex.Message);
-            }
-        }
+        
     }
 
     private void DeleteBookButton_Click(object sender, RoutedEventArgs e)
     {
-        if (DataGrid_Booking.SelectedItem == null)
+        MessageBoxResult result = MessageBox.Show(
+        "Are you sure you want to delete book?",
+        "Confirmation of action",
+        MessageBoxButton.YesNo,
+        MessageBoxImage.Question);
+        if (result == MessageBoxResult.Yes) {
+            if (DataGrid_Booking.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a booking to cancel.");
+                return;
+            }
+
+            DataRowView selectedRow = (DataRowView)DataGrid_Booking.SelectedItem;
+
+            int bookingId = Convert.ToInt32(selectedRow["ID Book"]);
+            string query = "DELETE FROM bookings WHERE id_bookings = @bookingId";
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@bookingId", bookingId);
+                    cmd.ExecuteNonQuery();
+                    LoadUserBookings();
+                    MessageBox.Show("Booking successfully deleted.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error deleting booking: " + ex.Message);
+                }
+            }
+        }
+        else
         {
-            MessageBox.Show("Please select a booking to cancel.");
             return;
         }
-
-        DataRowView selectedRow = (DataRowView)DataGrid_Booking.SelectedItem;
-
-        int bookingId = Convert.ToInt32(selectedRow["ID Book"]);
-        string query = "DELETE FROM bookings WHERE id_bookings = @bookingId";
-        using (MySqlConnection conn = new MySqlConnection(connectionString))
-        {
-            try
-            {
-                conn.Open();
-                MySqlCommand cmd = new MySqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@bookingId", bookingId);
-                cmd.ExecuteNonQuery();
-                LoadUserBookings();
-                MessageBox.Show("Booking successfully deleted.");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error deleting booking: " + ex.Message);
-            }
-        }
+        
     }
 
     private void SearchTextBox1_TextChanged(object sender, TextChangedEventArgs e)
@@ -620,198 +691,234 @@ ORDER BY
 
     private void LoadTableButton_Click(object sender, RoutedEventArgs e)
     {
-        try
-        {
+            try
+            {
+                DataBaseHelper helperDataBase = new DataBaseHelper();
+                if (TableComboBox.Text == "user")
+                {
+                    AdminDataGrid.ItemsSource = null;
+                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.user;");
+                    AdminDataGrid.ItemsSource = table.DefaultView;
+
+                }
+                if (TableComboBox.Text == "trips")
+                {
+                    AdminDataGrid.ItemsSource = null;
+                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.trips;");
+                    AdminDataGrid.ItemsSource = table.DefaultView;
+                }
+                if (TableComboBox.Text == "transport")
+                {
+                    AdminDataGrid.ItemsSource = null;
+                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.transport;");
+                    AdminDataGrid.ItemsSource = table.DefaultView;
+                }
+                if (TableComboBox.Text == "reviews")
+                {
+                    AdminDataGrid.ItemsSource = null;
+                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.reviews;");
+                    AdminDataGrid.ItemsSource = table.DefaultView;
+                }
+                if (TableComboBox.Text == "destination")
+                {
+                    AdminDataGrid.ItemsSource = null;
+                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.destination;");
+                    AdminDataGrid.ItemsSource = table.DefaultView;
+                }
+                if (TableComboBox.Text == "bookings")
+                {
+                    AdminDataGrid.ItemsSource = null;
+                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.bookings;");
+                    AdminDataGrid.ItemsSource = table.DefaultView;
+                }
+                if (TableComboBox.Text == "accommodation")
+                {
+                    AdminDataGrid.ItemsSource = null;
+                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.accommodation;");
+                    AdminDataGrid.ItemsSource = table.DefaultView;
+                }
+                else if (TableComboBox.Text == "")
+                {
+                    MessageBox.Show("Please select a table.");
+                    return;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }             
+    }
+
+    private void AddButton_Click(object sender, RoutedEventArgs e)
+    {
+        MessageBoxResult result = MessageBox.Show(
+        "Are you sure you want to add?",
+        "Confirmation of action",
+        MessageBoxButton.YesNo,
+        MessageBoxImage.Question);
+
+        if (result == MessageBoxResult.Yes) {
             DataBaseHelper helperDataBase = new DataBaseHelper();
             if (TableComboBox.Text == "user")
             {
-                AdminDataGrid.ItemsSource = null;
-                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.user;");
-                AdminDataGrid.ItemsSource = table.DefaultView;
-
+                var table = helperDataBase.SelectQuery(@"INSERT INTO user (first_name_user, last_name_user, email_user, password_user, birth_date) 
+                    VALUES ('first_name', 'last_name', '@gmail.com', 'password', '2025-01-01');");
+                LoadTableButton_Click(sender, e);
             }
+
             if (TableComboBox.Text == "trips")
             {
-                AdminDataGrid.ItemsSource = null;
-                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.trips;");
-                AdminDataGrid.ItemsSource = table.DefaultView;
+                var table = helperDataBase.SelectQuery(@"INSERT INTO trips (name_trip, topic, id_destination, date, price, id_transport, id_accommodation) 
+                    VALUES ('name_trip', 'topic', 000, 'date', 000, 000, 000);");
+                LoadTableButton_Click(sender, e);
+
             }
             if (TableComboBox.Text == "transport")
             {
-                AdminDataGrid.ItemsSource = null;
-                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.transport;");
-                AdminDataGrid.ItemsSource = table.DefaultView;
+                var table = helperDataBase.SelectQuery(@"INSERT INTO transport (type, transport_price) 
+                    VALUES ('type', 000);");
+                LoadTableButton_Click(sender, e);
+
             }
             if (TableComboBox.Text == "reviews")
             {
-                AdminDataGrid.ItemsSource = null;
-                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.reviews;");
-                AdminDataGrid.ItemsSource = table.DefaultView;
+                var table = helperDataBase.SelectQuery(@"INSERT INTO reviews (id_user, id_trip, rating, review_date) 
+                    VALUES (000, 000, 'rating', 'review_date');");
+                LoadTableButton_Click(sender, e);
             }
             if (TableComboBox.Text == "destination")
             {
-                AdminDataGrid.ItemsSource = null;
-                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.destination;");
-                AdminDataGrid.ItemsSource = table.DefaultView;
+                var table = helperDataBase.SelectQuery(@"INSERT INTO destination (city, country) 
+                    VALUES ('city', 'country');");
+                LoadTableButton_Click(sender, e);
             }
             if (TableComboBox.Text == "bookings")
             {
-                AdminDataGrid.ItemsSource = null;
-                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.bookings;");
-                AdminDataGrid.ItemsSource = table.DefaultView;
+                var table = helperDataBase.SelectQuery(@"INSERT INTO bookings (status, id_user, id_trip, booking_date) 
+                    VALUES ('status', 000, 000, 'booking_date');");
+                LoadTableButton_Click(sender, e);
             }
             if (TableComboBox.Text == "accommodation")
             {
-                AdminDataGrid.ItemsSource = null;
-                var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.accommodation;");
-                AdminDataGrid.ItemsSource = table.DefaultView;
+                var table = helperDataBase.SelectQuery(@"INSERT INTO accommodation (hotel_name, address, rooms_available, room_price) 
+                    VALUES ('hotel_name', 'address', 000, 000);");
+                LoadTableButton_Click(sender, e);
             }
             else if (TableComboBox.Text == "")
             {
                 MessageBox.Show("Please select a table.");
                 return;
             }
-
+        
         }
-        catch (Exception ex)
+        else
         {
-            MessageBox.Show("Error: " + ex.Message);
-        }
-    }
-
-    private void AddButton_Click(object sender, RoutedEventArgs e)
-    {
-        DataBaseHelper helperDataBase = new DataBaseHelper();
-        if (TableComboBox.Text == "user")
-        {
-            var table = helperDataBase.SelectQuery(@"INSERT INTO user (first_name_user, last_name_user, email_user, password_user, birth_date) 
-                    VALUES ('first_name', 'last_name', '@gmail.com', 'password', '2025-01-01');");
-            LoadTableButton_Click(sender, e);
-        }
-
-        if (TableComboBox.Text == "trips")
-        {
-            var table = helperDataBase.SelectQuery(@"INSERT INTO trips (name_trip, topic, id_destination, date, price, id_transport, id_accommodation) 
-                    VALUES ('name_trip', 'topic', 000, 'date', 000, 000, 000);");
-            LoadTableButton_Click(sender, e);
-
-        }
-        if (TableComboBox.Text == "transport")
-        {
-            var table = helperDataBase.SelectQuery(@"INSERT INTO transport (type, transport_price) 
-                    VALUES ('type', 000);");
-            LoadTableButton_Click(sender, e);
-
-        }
-        if (TableComboBox.Text == "reviews")
-        {
-            var table = helperDataBase.SelectQuery(@"INSERT INTO reviews (id_user, id_trip, rating, review_date) 
-                    VALUES (000, 000, 'rating', 'review_date');");
-            LoadTableButton_Click(sender, e);
-        }
-        if (TableComboBox.Text == "destination")
-        {
-            var table = helperDataBase.SelectQuery(@"INSERT INTO destination (city, country) 
-                    VALUES ('city', 'country');");
-            LoadTableButton_Click(sender, e);
-        }
-        if (TableComboBox.Text == "bookings")
-        {
-            var table = helperDataBase.SelectQuery(@"INSERT INTO bookings (status, id_user, id_trip, booking_date) 
-                    VALUES ('status', 000, 000, 'booking_date');");
-            LoadTableButton_Click(sender, e);
-        }
-        if (TableComboBox.Text == "accommodation")
-        {
-            var table = helperDataBase.SelectQuery(@"INSERT INTO accommodation (hotel_name, address, rooms_available, room_price) 
-                    VALUES ('hotel_name', 'address', 000, 000);");
-            LoadTableButton_Click(sender, e);
-        }
-        else if (TableComboBox.Text == "")
-        {
-            MessageBox.Show("Please select a table.");
             return;
         }
+
+        
     }
 
     private void DeleteButton_Click(object sender, RoutedEventArgs e)
     {
-        try
-        {
-            DataBaseHelper delete = new DataBaseHelper();
+        MessageBoxResult result = MessageBox.Show(
+        "Are you sure you want to delete?",
+        "Confirmation of action",
+        MessageBoxButton.YesNo,
+        MessageBoxImage.Question);
 
-            if (AdminDataGrid.SelectedItem is DataRowView selectedRow)
+        if (result == MessageBoxResult.Yes) {
+            try
             {
-                if (TableComboBox.Text == "user")
+                DataBaseHelper delete = new DataBaseHelper();
+
+                if (AdminDataGrid.SelectedItem is DataRowView selectedRow)
                 {
-                    int id_user = Convert.ToInt32(selectedRow["id_user"]);
-                    string query = $"DELETE FROM user WHERE id_user = {id_user}";
-                    delete.NoneQuery(query);
-                    LoadTableButton_Click(sender, e);
+                    if (TableComboBox.Text == "user")
+                    {
+                        int id_user = Convert.ToInt32(selectedRow["id_user"]);
+                        string query = $"DELETE FROM user WHERE id_user = {id_user}";
+                        delete.NoneQuery(query);
+                        LoadTableButton_Click(sender, e);
+                    }
+                    else if (TableComboBox.Text == "trips")
+                    {
+                        int id_trip = Convert.ToInt32(selectedRow["id_trip"]);
+                        string query = $"DELETE FROM trips WHERE id_trip = {id_trip}";
+                        delete.NoneQuery(query);
+                        LoadTableButton_Click(sender, e);
+                    }
+                    else if (TableComboBox.Text == "transport")
+                    {
+                        int id_transport = Convert.ToInt32(selectedRow["id_transport"]);
+                        string query = $"DELETE FROM transport WHERE id_transport = {id_transport}";
+                        delete.NoneQuery(query);
+                        LoadTableButton_Click(sender, e);
+                    }
+                    else if (TableComboBox.Text == "reviews")
+                    {
+                        int id_reviews = Convert.ToInt32(selectedRow["id_reviews"]);
+                        string query = $"DELETE FROM reviews WHERE id_reviews = {id_reviews}";
+                        delete.NoneQuery(query);
+                        LoadTableButton_Click(sender, e);
+                    }
+                    else if (TableComboBox.Text == "destination")
+                    {
+                        int id_destination = Convert.ToInt32(selectedRow["id_destination"]);
+                        string query = $"DELETE FROM destination WHERE id_destination = {id_destination}";
+                        delete.NoneQuery(query);
+                        LoadTableButton_Click(sender, e);
+                    }
+                    else if (TableComboBox.Text == "bookings")
+                    {
+                        int id_bookings = Convert.ToInt32(selectedRow["id_bookings"]);
+                        string query = $"DELETE FROM bookings WHERE id_bookings = {id_bookings}";
+                        delete.NoneQuery(query);
+                        LoadTableButton_Click(sender, e);
+                    }
+                    else if (TableComboBox.Text == "accommodation")
+                    {
+                        int id_accommodation = Convert.ToInt32(selectedRow["id_accommodation"]);
+                        string query = $"DELETE FROM accommodation WHERE id_accommodation = {id_accommodation}";
+                        delete.NoneQuery(query);
+                        LoadTableButton_Click(sender, e);
+                    }
                 }
-                else if (TableComboBox.Text == "trips")
+                else
                 {
-                    int id_trip = Convert.ToInt32(selectedRow["id_trip"]);
-                    string query = $"DELETE FROM trips WHERE id_trip = {id_trip}";
-                    delete.NoneQuery(query);
-                    LoadTableButton_Click(sender, e);
-                }
-                else if (TableComboBox.Text == "transport")
-                {
-                    int id_transport = Convert.ToInt32(selectedRow["id_transport"]);
-                    string query = $"DELETE FROM transport WHERE id_transport = {id_transport}";
-                    delete.NoneQuery(query);
-                    LoadTableButton_Click(sender, e);
-                }
-                else if (TableComboBox.Text == "reviews")
-                {
-                    int id_reviews = Convert.ToInt32(selectedRow["id_reviews"]);
-                    string query = $"DELETE FROM reviews WHERE id_reviews = {id_reviews}";
-                    delete.NoneQuery(query);
-                    LoadTableButton_Click(sender, e);
-                }
-                else if (TableComboBox.Text == "destination")
-                {
-                    int id_destination = Convert.ToInt32(selectedRow["id_destination"]);
-                    string query = $"DELETE FROM destination WHERE id_destination = {id_destination}";
-                    delete.NoneQuery(query);
-                    LoadTableButton_Click(sender, e);
-                }
-                else if (TableComboBox.Text == "bookings")
-                {
-                    int id_bookings = Convert.ToInt32(selectedRow["id_bookings"]);
-                    string query = $"DELETE FROM bookings WHERE id_bookings = {id_bookings}";
-                    delete.NoneQuery(query);
-                    LoadTableButton_Click(sender, e);
-                }
-                else if (TableComboBox.Text == "accommodation")
-                {
-                    int id_accommodation = Convert.ToInt32(selectedRow["id_accommodation"]);
-                    string query = $"DELETE FROM accommodation WHERE id_accommodation = {id_accommodation}";
-                    delete.NoneQuery(query);
-                    LoadTableButton_Click(sender, e);
+                    MessageBox.Show("Error.");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Error.");
+                MessageBox.Show("Error: " + ex.Message);
             }
         }
-        catch (Exception ex)
+        else
         {
-            MessageBox.Show("Error: " + ex.Message);
+            return;
         }
+
+        
         
     }
 
     private void ViewButton_Click(object sender, RoutedEventArgs e)
     {
-        int selectIndex = AdminComboBox.SelectedIndex;
+        MessageBoxResult result = MessageBox.Show(
+        "Are you sure you want to view?",
+        "Confirmation of action",
+        MessageBoxButton.YesNo,
+        MessageBoxImage.Question);
 
-        switch (selectIndex)
-        {
-            case 0:
-                string query = @"SELECT 
+        if (result == MessageBoxResult.Yes) {
+            int selectIndex = AdminComboBox.SelectedIndex;
+
+            switch (selectIndex)
+            {
+                case 0:
+                    string query = @"SELECT 
                     trips.topic AS 'Topic', 
                     COUNT(*) AS 'Confirmed Bookings Count'
                         FROM bookings
@@ -820,25 +927,25 @@ ORDER BY
                         GROUP BY trips.topic
                         ORDER BY `Confirmed Bookings Count` DESC;";
 
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                {
-                    try
+                    using (MySqlConnection conn = new MySqlConnection(connectionString))
                     {
-                        conn.Open();
-                        MySqlCommand cmd = new MySqlCommand(query, conn);
-                        MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
-                        DataTable dt = new DataTable();
-                        adapter.Fill(dt);
-                        AdminDataGrid.ItemsSource = dt.DefaultView;
+                        try
+                        {
+                            conn.Open();
+                            MySqlCommand cmd = new MySqlCommand(query, conn);
+                            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+                            DataTable dt = new DataTable();
+                            adapter.Fill(dt);
+                            AdminDataGrid.ItemsSource = dt.DefaultView;
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Error: " + ex.Message);
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Error: " + ex.Message);
-                    }
-                }
-                break;
-            case 1:
-                query = @"SELECT 
+                    break;
+                case 1:
+                    query = @"SELECT 
                     name_trip AS 'Trip Name',
                     COUNT(bookings.id_bookings) AS 'Confirmed Bookings Count'
                     FROM bookings
@@ -847,25 +954,25 @@ ORDER BY
                     GROUP BY name_trip
                     ORDER BY 'Confirmed Bookings Count' DESC;";
 
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                {
-                    try
+                    using (MySqlConnection conn = new MySqlConnection(connectionString))
                     {
-                        conn.Open();
-                        MySqlCommand cmd = new MySqlCommand(query, conn);
-                        MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
-                        DataTable dt = new DataTable();
-                        adapter.Fill(dt);
-                        AdminDataGrid.ItemsSource = dt.DefaultView;
+                        try
+                        {
+                            conn.Open();
+                            MySqlCommand cmd = new MySqlCommand(query, conn);
+                            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+                            DataTable dt = new DataTable();
+                            adapter.Fill(dt);
+                            AdminDataGrid.ItemsSource = dt.DefaultView;
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Error: " + ex.Message);
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Error: " + ex.Message);
-                    }
-                }
-                break;
-            case 2:
-                query = @"SELECT 
+                    break;
+                case 2:
+                    query = @"SELECT 
                     first_name_user AS 'First Name',
                     last_name_user AS 'Last Name',
                     email_user AS Email,
@@ -875,25 +982,99 @@ ORDER BY
                     GROUP BY first_name_user, last_name_user, email_user
                     ORDER BY TotalBookings DESC;";
 
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                {
-                    try
+                    using (MySqlConnection conn = new MySqlConnection(connectionString))
                     {
-                        conn.Open();
-                        MySqlCommand cmd = new MySqlCommand(query, conn);
-                        MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
-                        DataTable dt = new DataTable();
-                        adapter.Fill(dt);
-                        AdminDataGrid.ItemsSource = dt.DefaultView;
+                        try
+                        {
+                            conn.Open();
+                            MySqlCommand cmd = new MySqlCommand(query, conn);
+                            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+                            DataTable dt = new DataTable();
+                            adapter.Fill(dt);
+                            AdminDataGrid.ItemsSource = dt.DefaultView;
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Error: " + ex.Message);
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Error: " + ex.Message);
-                    }
-                }
-                break;
+                    break;
+            }
+        }
+        else
+        {
+            return;
+        }
+
+        
+    }
+
+    private void AdminDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+    {
+        if (e.EditAction != DataGridEditAction.Commit)
+            return;
+
+        Dispatcher.InvokeAsync(() =>
+        {
+            var row = (DataRowView)e.Row.Item;
+            string columnName = e.Column.Header.ToString();
+            object newValue = ((TextBox)e.EditingElement).Text;
+
+            int selectIndex = TableComboBox.SelectedIndex;
+
+            switch (selectIndex)
+            {
+                case 0:
+                    int id = Convert.ToInt32(row["id_user"]);
+                    string table = "user";
+                    string id_table = "id_user";
+                    UpdateDatabase(id, columnName, newValue, table, id_table);
+                    break;
+            }
+        });
+    }
+
+    private void UpdateDatabase(int id, string columnName, object value, string table, string id_table)
+    {
+        string query = $"UPDATE {table} SET `{columnName}` = @value WHERE {id_table} = @id";
+
+        using (MySqlConnection conn = new MySqlConnection(connectionString))
+        {
+            try
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@value", value);
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при обновлении: " + ex.Message);
+            }
         }
     }
 
+    private void ExitApp()
+    {
+        Application.Current.Shutdown();
+    }
 
+    private void ExitMainButton_Click(object sender, RoutedEventArgs e)
+    {
+        MessageBoxResult result = MessageBox.Show(
+        "Are you sure you want to exit?",
+        "Confirmation of action",
+        MessageBoxButton.YesNo,
+        MessageBoxImage.Question);
+
+        if (result == MessageBoxResult.Yes)
+        {
+            ExitApp();
+        }
+        else
+        {
+            return;
+        }
+    }
 }
