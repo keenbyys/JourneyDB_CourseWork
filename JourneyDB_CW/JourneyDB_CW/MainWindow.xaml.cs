@@ -63,7 +63,7 @@ public partial class MainWindow : Window
                 JOIN destination ON trips.id_destination = destination.id_destination
                 JOIN transport ON trips.id_transport = transport.id_transport
                 JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation
-            ORDER BY id_trip;";
+            ORDER BY trips.id_trip;";
 
         using (MySqlConnection conn = new MySqlConnection(connectionString))
         {

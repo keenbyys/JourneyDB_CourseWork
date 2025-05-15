@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:JourneyDB_CW"
         mc:Ignorable="d"
         Title="JoJourney" Height="750" Width="1400"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
     <Grid Margin="10">
 
 
@@ -91,7 +92,7 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Background="#DDD" Margin="10">
-                            <DataGrid x:Name="DataGrid" AutoGenerateColumns="True" 
+                            <DataGrid x:Name="DataGrid" AutoGenerateColumns="True" IsReadOnly="True"
                                       SelectionMode="Single"
                                       Height="615"
                                       BorderThickness="0"/>
@@ -250,7 +251,7 @@
             <!-- ======================================================================================== -->
             <!-- Visibility="Hidden" -->
 
-            <TabItem x:Name="AdminTabItem" Header="Admin" >
+            <TabItem x:Name="AdminTabItem" Header="Admin" Visibility="Hidden">
                 <StackPanel Margin="10">
                     <Grid>
                         <Grid.ColumnDefinitions>
