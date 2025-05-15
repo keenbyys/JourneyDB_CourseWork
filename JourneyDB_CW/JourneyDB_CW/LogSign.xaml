@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JourneyDB_CW"
         mc:Ignorable="d"
-        Title="LogSign" Height="450" Width="283">
+        Title="LogSign" Height="402" Width="283"
+        WindowStartupLocation="CenterScreen">
     <Grid Margin="10">
         <TabControl x:Name="MainTabControl">
 

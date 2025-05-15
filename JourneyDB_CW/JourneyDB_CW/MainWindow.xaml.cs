@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -41,35 +42,28 @@ public partial class MainWindow : Window
         FilterData();
     }
 
-
-
     public void LoadDataBase()
     {
         string query = @"SELECT 
-    trips.id_trip AS ""Trip ID"",
-    trips.name_trip AS ""Trip Name"",
-    trips.topic AS ""Topic"",
-    DATE_FORMAT(trips.date, '%d.%m.%Y') AS ""Trip Date"",
-    CONCAT(FORMAT(trips.price, 2), ' €') AS ""Trip Price"",
-    destination.city AS ""Destination City"",
-    destination.country AS ""Destination Country"",
-    transport.type AS ""Transport Type"",
-    CONCAT(FORMAT(transport.transport_price, 2), ' €') AS ""Transport Price"",
-    accommodation.hotel_name AS ""Hotel Name"",
-    accommodation.address AS ""Hotel Address"",
-    accommodation.rooms_available AS ""Rooms Available"",
-    CONCAT(FORMAT(accommodation.room_price, 2), ' €') AS ""Room Price"",
-    CONCAT(FORMAT(trips.price + transport.transport_price + accommodation.room_price, 2), ' €') AS ""Total Cost""
-FROM 
-    trips
-JOIN 
-    destination ON trips.id_destination = destination.id_destination
-JOIN 
-    transport ON trips.id_transport = transport.id_transport
-JOIN 
-    accommodation ON trips.id_accommodation = accommodation.id_accommodation
-ORDER BY 
-    id_trip;";
+            trips.id_trip AS ""Trip ID"",
+            trips.name_trip AS ""Trip Name"",
+            trips.topic AS ""Topic"",
+            DATE_FORMAT(trips.date, '%d.%m.%Y') AS ""Trip Date"",
+            CONCAT(FORMAT(trips.price, 2), ' €') AS ""Trip Price"",
+            destination.city AS ""Destination City"",
+            destination.country AS ""Destination Country"",
+            transport.type AS ""Transport Type"",
+            CONCAT(FORMAT(transport.transport_price, 2), ' €') AS ""Transport Price"",
+            accommodation.hotel_name AS ""Hotel Name"",
+            accommodation.address AS ""Hotel Address"",
+            accommodation.rooms_available AS ""Rooms Available"",
+            CONCAT(FORMAT(accommodation.room_price, 2), ' €') AS ""Room Price"",
+            CONCAT(FORMAT(trips.price + transport.transport_price + accommodation.room_price, 2), ' €') AS ""Total Cost""
+                FROM trips
+                JOIN destination ON trips.id_destination = destination.id_destination
+                JOIN transport ON trips.id_transport = transport.id_transport
+                JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation
+            ORDER BY id_trip;";
 
         using (MySqlConnection conn = new MySqlConnection(connectionString))
         {
@@ -88,7 +82,7 @@ ORDER BY
 
     private void LoadUserData()
     {
-        string query = "SELECT first_name_user, last_name_user, email_user, birth_date FROM user WHERE id_user = @UserId";
+        string query = @"SELECT first_name_user, last_name_user, email_user, birth_date FROM user WHERE id_user = @UserId";
         using (MySqlConnection conn = new MySqlConnection(connectionString))
         {
             conn.Open();
@@ -136,6 +130,7 @@ ORDER BY
                 JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation
             WHERE id_user = @UserId
             ORDER BY booking_date;";
+
         using (MySqlConnection conn = new MySqlConnection(connectionString))
         {
             conn.Open();
@@ -162,23 +157,24 @@ ORDER BY
 
     private void LoadUserReviews()
     {
-        string query = "SELECT " +
-            "id_reviews as \"ID Reviews\", " +
-            "DATE_FORMAT(review_date, '%d.%m.%Y') as \"Review Date\", " +
-            "rating AS \"Rating\", " +
-            "name_trip AS \"Trip Name\", " +
-            "topic AS \"Topic\", " +
-            "city AS \"Destination City\", " +
-            "country AS \"Destination Country\", " +
-            "type AS \"Transport Type\", " +
-            "hotel_name AS \"Hotel Name\", " +
-            "CONCAT(FORMAT(price + transport_price + room_price, 2), ' €') AS \"Total Cost\" " +
-            "FROM reviews " +
-            "JOIN trips ON reviews.id_trip = trips.id_trip " +
-            "JOIN destination ON trips.id_destination = destination.id_destination " +
-            "JOIN transport ON trips.id_transport = transport.id_transport " +
-            "JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation " +
-            "WHERE id_user = @UserId;";
+        string query = @"SELECT
+            id_reviews as ""ID Reviews"",
+            DATE_FORMAT(review_date, '%d.%m.%Y') as ""Review Date"",
+            rating AS ""Rating"",
+            name_trip AS ""Trip Name"",
+            topic AS ""Topic"",
+            city AS ""Destination City"",
+            country AS ""Destination Country"",
+            type AS ""Transport Type"",
+            hotel_name AS ""Hotel Name"",
+            CONCAT(FORMAT(price + transport_price + room_price, 2), ' €') AS ""Total Cost""
+                FROM reviews
+                JOIN trips ON reviews.id_trip = trips.id_trip
+                JOIN destination ON trips.id_destination = destination.id_destination
+                JOIN transport ON trips.id_transport = transport.id_transport
+                JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation
+            WHERE id_user = @UserId;";
+
         using (MySqlConnection conn = new MySqlConnection(connectionString))
         {
             conn.Open();
@@ -194,8 +190,6 @@ ORDER BY
             }
         }
     }
-
-    
 
     private string GetRandomStatus()
     {
@@ -225,11 +219,11 @@ ORDER BY
                 int tripId;
                 try
                 {
-                    tripId = Convert.ToInt32(selectedRow["Trip ID"]); // убедись, что колонка называется именно так
+                    tripId = Convert.ToInt32(selectedRow["Trip ID"]);
                 }
                 catch
                 {
-                    MessageBox.Show("Не вдалося отримати ID подорожі.");
+                    MessageBox.Show("Failed to retrieve trip ID.");
                     return;
                 }
 
@@ -250,7 +244,7 @@ ORDER BY
 
                         if (existingCount > 0)
                         {
-                            MessageBox.Show("Ви вже забронювали цю подорож (CONFIRMED або WAIT).");
+                            MessageBox.Show("You have already booked this trip (CONFIRMED).");
                             return;
                         }
 
@@ -268,19 +262,19 @@ ORDER BY
                             insertCmd.Parameters.AddWithValue("@booking_date", bookingDate);
 
                             insertCmd.ExecuteNonQuery();
-                            MessageBox.Show($"Бронювання створено зі статусом: {status}");
+                            MessageBox.Show($"Booking created with status: {status}");
                             LoadUserBookings();
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Помилка: " + ex.Message);
+                        MessageBox.Show("Error: " + ex.Message);
                     }
                 }
             }
             else
             {
-                MessageBox.Show("Будь ласка, виберіть подорож із таблиці.");
+                MessageBox.Show("Please select a trip from the table.");
             }
         }
         else
@@ -314,7 +308,7 @@ ORDER BY
 
                     if (rating == "0")
                     {
-                        MessageBox.Show("Будь ласка, виберіть рейтинг.");
+                        MessageBox.Show("Please select a rating.");
                         return;
                     }
 
@@ -327,26 +321,24 @@ ORDER BY
                     {
                         conn.Open();
                         cmd.ExecuteNonQuery();
-                        MessageBox.Show("Review створено!");
+                        MessageBox.Show("Review created!");
                         LoadUserReviews();
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Помилка: " + ex.Message);
+                        MessageBox.Show("Error: " + ex.Message);
                     }
                 }
             }
             else
             {
-                MessageBox.Show("Будь ласка, виберіть подорож із таблиці.");
+                MessageBox.Show("Please select a trip from the table.");
             }
         }
         else
         {
             return;
         }
-
-        
     }
 
     private int GetSelectedRating()
@@ -400,17 +392,17 @@ ORDER BY
                         conn.Open();
                         cmd.ExecuteNonQuery();
                         LoadUserReviews();
-                        MessageBox.Show("Review видалено!");
+                        MessageBox.Show("Review deleted!");
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Помилка: " + ex.Message);
+                        MessageBox.Show("Error: " + ex.Message);
                     }
                 }
             }
             else
             {
-                MessageBox.Show("Будь ласка, виберіть відгук із таблиці.");
+                MessageBox.Show("Please select a review from the table.");
             }
         }
         else
@@ -419,8 +411,6 @@ ORDER BY
         }
     }
 
-        
-
     private void CancelBookButton_Click(object sender, RoutedEventArgs e)
     {
         MessageBoxResult result = MessageBox.Show(
@@ -428,7 +418,7 @@ ORDER BY
         "Confirmation of action",
         MessageBoxButton.YesNo,
         MessageBoxImage.Question);
-        
+
         if (result == MessageBoxResult.Yes)
         {
             if (DataGrid_Booking.SelectedItem == null)
@@ -447,7 +437,7 @@ ORDER BY
                 return;
             }
 
-            string query = "UPDATE bookings SET status = 'CANCELED' WHERE id_bookings = @bookingId";
+            string query = @"UPDATE bookings SET status = 'CANCELED' WHERE id_bookings = @bookingId";
 
             using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
@@ -470,8 +460,6 @@ ORDER BY
         {
             return;
         }
-
-        
     }
 
     private void DeleteBookButton_Click(object sender, RoutedEventArgs e)
@@ -481,7 +469,8 @@ ORDER BY
         "Confirmation of action",
         MessageBoxButton.YesNo,
         MessageBoxImage.Question);
-        if (result == MessageBoxResult.Yes) {
+        if (result == MessageBoxResult.Yes)
+        {
             if (DataGrid_Booking.SelectedItem == null)
             {
                 MessageBox.Show("Please select a booking to cancel.");
@@ -491,7 +480,7 @@ ORDER BY
             DataRowView selectedRow = (DataRowView)DataGrid_Booking.SelectedItem;
 
             int bookingId = Convert.ToInt32(selectedRow["ID Book"]);
-            string query = "DELETE FROM bookings WHERE id_bookings = @bookingId";
+            string query = @"DELETE FROM bookings WHERE id_bookings = @bookingId";
             using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
                 try
@@ -513,7 +502,6 @@ ORDER BY
         {
             return;
         }
-        
     }
 
     private void SearchTextBox1_TextChanged(object sender, TextChangedEventArgs e)
@@ -551,7 +539,7 @@ ORDER BY
             conn.Open();
             using (MySqlCommand cmd = new MySqlCommand(query, conn))
             {
-                cmd.Parameters.AddWithValue("@UserId", currentUserId); // твоя переменная ID текущего пользователя
+                cmd.Parameters.AddWithValue("@UserId", currentUserId);
                 cmd.Parameters.AddWithValue("@SearchText", "%" + searchText + "%");
 
                 MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
@@ -593,13 +581,11 @@ ORDER BY
         CountryComboBox.IsEnabled = CountryCheckBox.IsChecked == true;
         PriceComboBox.IsEnabled = PriceCheckBox.IsChecked == true;
         TypeTransportComboBox.IsEnabled = TypeTransportCheckBox.IsChecked == true;
-        
     }
 
     private void FilterData()
     {
-        string query = @"
-        SELECT 
+        string query = @"SELECT 
             trips.id_trip AS 'Trip ID',
             trips.name_trip AS 'Trip Name',
             trips.topic AS 'Topic',
@@ -614,45 +600,41 @@ ORDER BY
             accommodation.rooms_available AS 'Rooms Available',
             CONCAT(FORMAT(accommodation.room_price, 2), ' €') AS 'Room Price',
             CONCAT(FORMAT(trips.price + transport.transport_price + accommodation.room_price, 2), ' €') AS 'Total Cost'
-        FROM 
-            trips
-        JOIN 
-            destination ON trips.id_destination = destination.id_destination
-        JOIN 
-            transport ON trips.id_transport = transport.id_transport
-        JOIN 
-            accommodation ON trips.id_accommodation = accommodation.id_accommodation
-        WHERE 1=1";
+                FROM trips
+                JOIN destination ON trips.id_destination = destination.id_destination
+                JOIN transport ON trips.id_transport = transport.id_transport
+                JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation
+            WHERE 1=1";
 
         var parameters = new List<MySqlParameter>();
 
         if (TopicCheckBox.IsChecked == true && TopicComboBox.SelectedValue != null)
         {
-            query += " AND trips.topic = @topic";
+            query += @" AND trips.topic = @topic";
             parameters.Add(new MySqlParameter("@topic", TopicComboBox.SelectedValue));
         }
 
         if (CountryCheckBox.IsChecked == true && CountryComboBox.SelectedValue != null)
         {
-            query += " AND destination.country = @country";
+            query += @" AND destination.country = @country";
             parameters.Add(new MySqlParameter("@country", CountryComboBox.SelectedValue));
         }
 
         if (PriceCheckBox.IsChecked == true && PriceComboBox.SelectedValue != null)
         {
-            query += " AND trips.price = @price";
+            query += @" AND trips.price = @price";
             parameters.Add(new MySqlParameter("@price", PriceComboBox.SelectedValue));
         }
 
         if (TypeTransportCheckBox.IsChecked == true && TypeTransportComboBox.SelectedValue != null)
         {
-            query += " AND transport.type = @type";
+            query += @" AND transport.type = @type";
             parameters.Add(new MySqlParameter("@type", TypeTransportComboBox.SelectedValue));
         }
 
         if (!string.IsNullOrWhiteSpace(SearchTextBox.Text))
         {
-            query += " AND trips.name_trip LIKE @searchText";
+            query += @" AND trips.name_trip LIKE @searchText";
             parameters.Add(new MySqlParameter("@searchText", "%" + SearchTextBox.Text + "%"));
         }
 
@@ -677,7 +659,7 @@ ORDER BY
         FilterData();
     }
 
-    // =======================================================================================================================================
+    // ADMIN PANEL =======================================================================================================================================
 
     private void AdminCheckBox_Checked(object sender, RoutedEventArgs e)
     {
@@ -691,63 +673,61 @@ ORDER BY
 
     private void LoadTableButton_Click(object sender, RoutedEventArgs e)
     {
-            try
+        try
+        {
+            DatabaseHelper helperDataBase = new DatabaseHelper();
+            if (TableComboBox.Text == "user")
             {
-                DataBaseHelper helperDataBase = new DataBaseHelper();
-                if (TableComboBox.Text == "user")
-                {
-                    AdminDataGrid.ItemsSource = null;
-                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.user;");
-                    AdminDataGrid.ItemsSource = table.DefaultView;
-
-                }
-                if (TableComboBox.Text == "trips")
-                {
-                    AdminDataGrid.ItemsSource = null;
-                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.trips;");
-                    AdminDataGrid.ItemsSource = table.DefaultView;
-                }
-                if (TableComboBox.Text == "transport")
-                {
-                    AdminDataGrid.ItemsSource = null;
-                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.transport;");
-                    AdminDataGrid.ItemsSource = table.DefaultView;
-                }
-                if (TableComboBox.Text == "reviews")
-                {
-                    AdminDataGrid.ItemsSource = null;
-                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.reviews;");
-                    AdminDataGrid.ItemsSource = table.DefaultView;
-                }
-                if (TableComboBox.Text == "destination")
-                {
-                    AdminDataGrid.ItemsSource = null;
-                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.destination;");
-                    AdminDataGrid.ItemsSource = table.DefaultView;
-                }
-                if (TableComboBox.Text == "bookings")
-                {
-                    AdminDataGrid.ItemsSource = null;
-                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.bookings;");
-                    AdminDataGrid.ItemsSource = table.DefaultView;
-                }
-                if (TableComboBox.Text == "accommodation")
-                {
-                    AdminDataGrid.ItemsSource = null;
-                    var table = helperDataBase.SelectQuery("SELECT * FROM db_joint_journey.accommodation;");
-                    AdminDataGrid.ItemsSource = table.DefaultView;
-                }
-                else if (TableComboBox.Text == "")
-                {
-                    MessageBox.Show("Please select a table.");
-                    return;
-                }
-
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery(@"SELECT * FROM db_joint_journey.user;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
             }
-            catch (Exception ex)
+            if (TableComboBox.Text == "trips")
             {
-                MessageBox.Show("Error: " + ex.Message);
-            }             
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery(@"SELECT * FROM db_joint_journey.trips;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
+            }
+            if (TableComboBox.Text == "transport")
+            {
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery(@"SELECT * FROM db_joint_journey.transport;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
+            }
+            if (TableComboBox.Text == "reviews")
+            {
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery(@"SELECT * FROM db_joint_journey.reviews;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
+            }
+            if (TableComboBox.Text == "destination")
+            {
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery(@"SELECT * FROM db_joint_journey.destination;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
+            }
+            if (TableComboBox.Text == "bookings")
+            {
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery(@"SELECT * FROM db_joint_journey.bookings;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
+            }
+            if (TableComboBox.Text == "accommodation")
+            {
+                AdminDataGrid.ItemsSource = null;
+                var table = helperDataBase.SelectQuery(@"SELECT * FROM db_joint_journey.accommodation;");
+                AdminDataGrid.ItemsSource = table.DefaultView;
+            }
+            else if (TableComboBox.Text == "")
+            {
+                MessageBox.Show("Please select a table.");
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Error: " + ex.Message);
+        }
     }
 
     private void AddButton_Click(object sender, RoutedEventArgs e)
@@ -758,8 +738,9 @@ ORDER BY
         MessageBoxButton.YesNo,
         MessageBoxImage.Question);
 
-        if (result == MessageBoxResult.Yes) {
-            DataBaseHelper helperDataBase = new DataBaseHelper();
+        if (result == MessageBoxResult.Yes)
+        {
+            DatabaseHelper helperDataBase = new DatabaseHelper();
             if (TableComboBox.Text == "user")
             {
                 var table = helperDataBase.SelectQuery(@"INSERT INTO user (first_name_user, last_name_user, email_user, password_user, birth_date) 
@@ -772,14 +753,12 @@ ORDER BY
                 var table = helperDataBase.SelectQuery(@"INSERT INTO trips (name_trip, topic, id_destination, date, price, id_transport, id_accommodation) 
                     VALUES ('name_trip', 'topic', 000, 'date', 000, 000, 000);");
                 LoadTableButton_Click(sender, e);
-
             }
             if (TableComboBox.Text == "transport")
             {
                 var table = helperDataBase.SelectQuery(@"INSERT INTO transport (type, transport_price) 
                     VALUES ('type', 000);");
                 LoadTableButton_Click(sender, e);
-
             }
             if (TableComboBox.Text == "reviews")
             {
@@ -810,14 +789,11 @@ ORDER BY
                 MessageBox.Show("Please select a table.");
                 return;
             }
-        
         }
         else
         {
             return;
         }
-
-        
     }
 
     private void DeleteButton_Click(object sender, RoutedEventArgs e)
@@ -828,59 +804,60 @@ ORDER BY
         MessageBoxButton.YesNo,
         MessageBoxImage.Question);
 
-        if (result == MessageBoxResult.Yes) {
+        if (result == MessageBoxResult.Yes)
+        {
             try
             {
-                DataBaseHelper delete = new DataBaseHelper();
+                DatabaseHelper delete = new DatabaseHelper();
 
                 if (AdminDataGrid.SelectedItem is DataRowView selectedRow)
                 {
                     if (TableComboBox.Text == "user")
                     {
                         int id_user = Convert.ToInt32(selectedRow["id_user"]);
-                        string query = $"DELETE FROM user WHERE id_user = {id_user}";
+                        string query = @$"DELETE FROM user WHERE id_user = {id_user}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                     }
                     else if (TableComboBox.Text == "trips")
                     {
                         int id_trip = Convert.ToInt32(selectedRow["id_trip"]);
-                        string query = $"DELETE FROM trips WHERE id_trip = {id_trip}";
+                        string query = @$"DELETE FROM trips WHERE id_trip = {id_trip}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                     }
                     else if (TableComboBox.Text == "transport")
                     {
                         int id_transport = Convert.ToInt32(selectedRow["id_transport"]);
-                        string query = $"DELETE FROM transport WHERE id_transport = {id_transport}";
+                        string query = @$"DELETE FROM transport WHERE id_transport = {id_transport}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                     }
                     else if (TableComboBox.Text == "reviews")
                     {
                         int id_reviews = Convert.ToInt32(selectedRow["id_reviews"]);
-                        string query = $"DELETE FROM reviews WHERE id_reviews = {id_reviews}";
+                        string query = @$"DELETE FROM reviews WHERE id_reviews = {id_reviews}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                     }
                     else if (TableComboBox.Text == "destination")
                     {
                         int id_destination = Convert.ToInt32(selectedRow["id_destination"]);
-                        string query = $"DELETE FROM destination WHERE id_destination = {id_destination}";
+                        string query = @$"DELETE FROM destination WHERE id_destination = {id_destination}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                     }
                     else if (TableComboBox.Text == "bookings")
                     {
                         int id_bookings = Convert.ToInt32(selectedRow["id_bookings"]);
-                        string query = $"DELETE FROM bookings WHERE id_bookings = {id_bookings}";
+                        string query = @$"DELETE FROM bookings WHERE id_bookings = {id_bookings}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                     }
                     else if (TableComboBox.Text == "accommodation")
                     {
                         int id_accommodation = Convert.ToInt32(selectedRow["id_accommodation"]);
-                        string query = $"DELETE FROM accommodation WHERE id_accommodation = {id_accommodation}";
+                        string query = @$"DELETE FROM accommodation WHERE id_accommodation = {id_accommodation}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                     }
@@ -899,9 +876,6 @@ ORDER BY
         {
             return;
         }
-
-        
-        
     }
 
     private void ViewButton_Click(object sender, RoutedEventArgs e)
@@ -912,7 +886,8 @@ ORDER BY
         MessageBoxButton.YesNo,
         MessageBoxImage.Question);
 
-        if (result == MessageBoxResult.Yes) {
+        if (result == MessageBoxResult.Yes)
+        {
             int selectIndex = AdminComboBox.SelectedIndex;
 
             switch (selectIndex)
@@ -923,9 +898,9 @@ ORDER BY
                     COUNT(*) AS 'Confirmed Bookings Count'
                         FROM bookings
                         JOIN trips ON bookings.id_trip = trips.id_trip
-                        WHERE bookings.status = 'CONFIRMED'
-                        GROUP BY trips.topic
-                        ORDER BY `Confirmed Bookings Count` DESC;";
+                    WHERE bookings.status = 'CONFIRMED'
+                    GROUP BY trips.topic
+                    ORDER BY `Confirmed Bookings Count` DESC;";
 
                     using (MySqlConnection conn = new MySqlConnection(connectionString))
                     {
@@ -1005,8 +980,6 @@ ORDER BY
         {
             return;
         }
-
-        
     }
 
     private void AdminDataGrid_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
@@ -1036,7 +1009,7 @@ ORDER BY
 
     private void UpdateDatabase(int id, string columnName, object value, string table, string id_table)
     {
-        string query = $"UPDATE {table} SET `{columnName}` = @value WHERE {id_table} = @id";
+        string query = @$"UPDATE {table} SET `{columnName}` = @value WHERE {id_table} = @id";
 
         using (MySqlConnection conn = new MySqlConnection(connectionString))
         {
@@ -1050,7 +1023,7 @@ ORDER BY
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка при обновлении: " + ex.Message);
+                MessageBox.Show("Error updating: " + ex.Message);
             }
         }
     }

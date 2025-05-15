@@ -32,7 +32,22 @@ namespace JourneyDB_CW
         {
             if (!ValidateInputs(out string errorMessage))
             {
-                MessageBox.Show(errorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(errorMessage, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (BirthDatePicker.SelectedDate == null)
+            {
+                MessageBox.Show("Please select your date of birth.", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            DateTime birthDate = BirthDatePicker.SelectedDate.Value;
+            int age = CalculateAge(birthDate);
+
+            if (age < 18)
+            {
+                MessageBox.Show("You must be at least 18 years old to register.", "Age Restriction", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -40,34 +55,40 @@ namespace JourneyDB_CW
             string lastName = LastNameTextBox.Text.Trim();
             string email = EmailTextBox.Text.Trim();
             string password = PasswordBox.Password.Trim();
-            DateTime birthDate = BirthDatePicker.SelectedDate.Value;
 
             RegisterUser(firstName, lastName, email, password, birthDate);
+        }
+
+        private int CalculateAge(DateTime birthDate)
+        {
+            DateTime today = DateTime.Today;
+            int age = today.Year - birthDate.Year;
+            if (birthDate > today.AddYears(-age)) age--;
+            return age;
         }
 
         private bool ValidateInputs(out string errorMessage)
         {
             List<string> emptyFields = new List<string>();
 
-            // Проверка на пустые поля
             if (string.IsNullOrWhiteSpace(FirstNameTextBox.Text))
-                emptyFields.Add("Имя");
+                emptyFields.Add("First Name");
 
             if (string.IsNullOrWhiteSpace(LastNameTextBox.Text))
-                emptyFields.Add("Фамилия");
+                emptyFields.Add("Last Name");
 
             if (EmailTextBox.Text == "@gmail.com")
                 emptyFields.Add("Email");
 
             if (string.IsNullOrWhiteSpace(PasswordBox.Password))
-                emptyFields.Add("Пароль");
+                emptyFields.Add("Password");
 
             if (BirthDatePicker.SelectedDate == null)
-                emptyFields.Add("Дата рождения");
+                emptyFields.Add("Birth Date");
 
             if (emptyFields.Count > 0)
             {
-                errorMessage = "Заполните следующие поля:\n- " + string.Join("\n- ", emptyFields);
+                errorMessage = "Fill in the following fields:\n- " + string.Join("\n- ", emptyFields);
                 return false;
             }
 
@@ -89,12 +110,12 @@ namespace JourneyDB_CW
                         cmd.Parameters.AddWithValue("@Email", email);
 
                         long count = (long)cmd.ExecuteScalar();
-                        return count == 0; // Если count == 0, значит email уникален
+                        return count == 0;
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при подключении к базе данных: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error connecting to the database: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
             }
@@ -104,7 +125,7 @@ namespace JourneyDB_CW
         {
             if (!IsEmailUnique(email))
             {
-                MessageBox.Show("Пользователь с таким email уже существует.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("A user with this email already exists.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -127,19 +148,18 @@ namespace JourneyDB_CW
                         cmd.Parameters.AddWithValue("@birthDate", birthDate.ToString("yyyy-MM-dd"));
 
                         cmd.ExecuteNonQuery();
-                        MessageBox.Show("Регистрация успешна!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("Registration successful!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                 }
             }
             catch (MySqlException ex)
             {
                 if (ex.Number == 1062)
-                    MessageBox.Show("Пользователь с таким email уже существует.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("A user with this email already exists.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 else
-                    MessageBox.Show("Ошибка базы данных: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Database error: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
 
         private bool isUpdating = false;
 
@@ -152,10 +172,8 @@ namespace JourneyDB_CW
             TextBox textBox = (TextBox)sender;
             string input = textBox.Text;
 
-            // Если пользователь удалил @gmail.com — вернём обратно
             if (!input.EndsWith(suffix))
             {
-                // Удалим всё, что после "@" (если пользователь случайно ввёл свою почту)
                 int atIndex = input.IndexOf("@");
                 if (atIndex != -1)
                     input = input.Substring(0, atIndex);
@@ -188,19 +206,16 @@ namespace JourneyDB_CW
                     {
                         int userId = Convert.ToInt32(result);
 
-                        // создаём главное окно
                         MainWindow mainWindow = new MainWindow(userId);
 
-                        // делаем его главным окном приложения
                         Application.Current.MainWindow = mainWindow;
                         mainWindow.Show();
 
-                        // закрываем окно логина
                         this.Close();
                     }
                     else
                     {
-                        MessageBox.Show("Неверный email или пароль", "Ошибка входа", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show("Invalid email or password", "Login Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
             }

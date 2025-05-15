@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using MySql.Data.MySqlClient;
 
 namespace JourneyDB_CW
 {
-    class DataBaseHelper
+    class DatabaseHelper
     {
         private string connectionString = "Server=localhost;Database=db_joint_journey;Uid=root;Pwd=50026022SVK-23;";
         MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;

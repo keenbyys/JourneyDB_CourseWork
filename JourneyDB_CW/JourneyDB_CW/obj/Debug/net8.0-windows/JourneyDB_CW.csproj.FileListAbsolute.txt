@@ -79,3 +79,4 @@ C:\Users\sjdro\source\repos\JourneyDB_CourseWork\JourneyDB_CourseWork\JourneyDB_
 C:\Users\sjdro\source\repos\JourneyDB_CourseWork\JourneyDB_CourseWork\JourneyDB_CW\JourneyDB_CW\obj\Debug\net8.0-windows\JourneyDB_CW.pdb
 C:\Users\sjdro\source\repos\JourneyDB_CourseWork\JourneyDB_CourseWork\JourneyDB_CW\JourneyDB_CW\obj\Debug\net8.0-windows\JourneyDB_CW.genruntimeconfig.cache
 C:\Users\sjdro\source\repos\JourneyDB_CourseWork\JourneyDB_CourseWork\JourneyDB_CW\JourneyDB_CW\obj\Debug\net8.0-windows\ref\JourneyDB_CW.dll
+C:\Users\sjdro\source\repos\JourneyDB_CourseWork\JourneyDB_CourseWork\JourneyDB_CW\JourneyDB_CW\obj\Debug\net8.0-windows\JourneyDB_CW_Content.g.cs
