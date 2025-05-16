@@ -30,14 +30,13 @@ namespace JourneyDB_CW
                 }
                 catch (Exception ex)
                 {
-                    System.Windows.MessageBox.Show($"Помилка при з'єднанні з БД: {ex.Message}");
+                    System.Windows.MessageBox.Show($"Error connecting to the database: {ex.Message}");
                 }
             }
 
             return dataTable;
         }
 
-        
         public void NoneQuery(string query)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -50,10 +49,9 @@ namespace JourneyDB_CW
                 }
                 catch (Exception ex)
                 {
-                    System.Windows.MessageBox.Show($"Помилка при з'єднанні з БД: {ex.Message}");
+                    System.Windows.MessageBox.Show($"Error connecting to the database: {ex.Message}");
                 }
             }
         }
-
     }
 }

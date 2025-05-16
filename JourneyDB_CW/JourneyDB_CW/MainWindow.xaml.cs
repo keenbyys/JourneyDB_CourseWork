@@ -23,6 +23,7 @@ namespace JourneyDB_CW;
 public partial class MainWindow : Window
 {
     private string connectionString = "Server=localhost;Database=db_joint_journey;Uid=root;Pwd=50026022SVK-23;";
+    DataBaseProcedures _dbService = new DataBaseProcedures("Server=localhost;Database=db_joint_journey;Uid=root;Pwd=50026022SVK-23;");
     private readonly int currentUserId;
 
     public MainWindow(int userId)
@@ -39,6 +40,7 @@ public partial class MainWindow : Window
         LoadUniqueValues("SELECT DISTINCT country FROM destination ORDER BY country ASC", CountryComboBox, "country");
         LoadUniqueValues("SELECT DISTINCT price FROM trips ORDER BY price ASC", PriceComboBox, "price");
         LoadUniqueValues("SELECT DISTINCT type FROM transport ORDER BY type ASC", TypeTransportComboBox, "type");
+        
         FilterData();
     }
 
@@ -46,28 +48,12 @@ public partial class MainWindow : Window
     {
         try
         {
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                conn.Open();
-                using (MySqlCommand cmd = new MySqlCommand("GetTripDetails", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
-                    {
-                        DataTable dataTable = new DataTable();
-                        adapter.Fill(dataTable);
-                        DataGrid.ItemsSource = dataTable.DefaultView;
-                    }
-                }
-            }
-        }
-        catch (MySqlException ex)
-        {
-            MessageBox.Show($"Database connection error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            DataTable dataTable = _dbService.ExecuteStoredProcedure("GetTripDetails");
+            DataGrid.ItemsSource = dataTable.DefaultView;
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -98,38 +84,23 @@ public partial class MainWindow : Window
     {
         try
         {
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                conn.Open();
-                using (MySqlCommand cmd = new MySqlCommand("GetUserBookings", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("userId", currentUserId);
-                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
-                    {
-                        DataTable bookingsTable = new DataTable();
-                        adapter.Fill(bookingsTable);
-                        DataGrid_Booking.ItemsSource = bookingsTable.DefaultView;
+            DataTable bookingsTable = _dbService.ExecuteStoredProcedure(
+                "GetUserBookings",
+                new MySqlParameter("userId", currentUserId)
+            );
+            DataGrid_Booking.ItemsSource = bookingsTable.DefaultView;
 
-                        // Hide the "Trip ID" column
-                        DataGrid_Booking.AutoGeneratingColumn += (s, e) =>
-                        {
-                            if (e.PropertyName == "Trip ID")
-                            {
-                                e.Column.Visibility = Visibility.Collapsed;
-                            }
-                        };
-                    }
+            DataGrid_Booking.AutoGeneratingColumn += (s, e) =>
+            {
+                if (e.PropertyName == "Trip ID")
+                {
+                    e.Column.Visibility = Visibility.Collapsed;
                 }
-            }
-        }
-        catch (MySqlException ex)
-        {
-            MessageBox.Show($"Database connection error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            };
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -137,21 +108,11 @@ public partial class MainWindow : Window
     {
         try
         {
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                conn.Open();
-                using (MySqlCommand cmd = new MySqlCommand("GetUserReviews", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("userId", currentUserId);
-                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
-                    {
-                        DataTable reviewsTable = new DataTable();
-                        adapter.Fill(reviewsTable);
-                        DataGrid_Review.ItemsSource = reviewsTable.DefaultView;
-                    }
-                }
-            }
+            DataTable reviewTable = _dbService.ExecuteStoredProcedure(
+                "GetUserReviews",
+                new MySqlParameter("userId", currentUserId)
+            );
+            DataGrid_Review.ItemsSource = reviewTable.DefaultView;
         }
         catch (MySqlException ex)
         {
@@ -201,7 +162,7 @@ public partial class MainWindow : Window
 
                 string checkQuery = @"SELECT COUNT(*) FROM bookings 
                               WHERE id_user = @id_user AND id_trip = @id_trip 
-                              AND status IN ('CONFIRMED', 'WAIT')";
+                              AND status IN ('CONFIRMED')";
 
                 using (MySqlConnection conn = new MySqlConnection(connectionString))
                 using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
@@ -482,31 +443,16 @@ public partial class MainWindow : Window
 
         try
         {
-            using (MySqlConnection conn = new MySqlConnection(connectionString))
-            {
-                conn.Open();
-                using (MySqlCommand cmd = new MySqlCommand("SearchUserBookings", conn))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("p_id_user", currentUserId);
-                    cmd.Parameters.AddWithValue("p_search_text", "%" + searchText + "%");
-
-                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
-                    {
-                        DataTable dt = new DataTable();
-                        adapter.Fill(dt);
-                        DataGrid_Booking.ItemsSource = dt.DefaultView;
-                    }
-                }
-            }
-        }
-        catch (MySqlException ex)
-        {
-            MessageBox.Show($"Database connection error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            DataTable dt = _dbService.ExecuteStoredProcedure(
+                "SearchUserBookings",
+                new MySqlParameter("p_id_user", currentUserId),
+                new MySqlParameter("p_search_text", "%" + searchText + "%")
+            );
+            DataGrid_Booking.ItemsSource = dt.DefaultView;
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
