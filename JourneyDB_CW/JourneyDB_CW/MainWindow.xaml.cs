@@ -44,39 +44,30 @@ public partial class MainWindow : Window
 
     public void LoadDataBase()
     {
-        string query = @"SELECT 
-            trips.id_trip AS ""Trip ID"",
-            trips.name_trip AS ""Trip Name"",
-            trips.topic AS ""Topic"",
-            DATE_FORMAT(trips.date, '%d.%m.%Y') AS ""Trip Date"",
-            CONCAT(FORMAT(trips.price, 2), ' €') AS ""Trip Price"",
-            destination.city AS ""Destination City"",
-            destination.country AS ""Destination Country"",
-            transport.type AS ""Transport Type"",
-            CONCAT(FORMAT(transport.transport_price, 2), ' €') AS ""Transport Price"",
-            accommodation.hotel_name AS ""Hotel Name"",
-            accommodation.address AS ""Hotel Address"",
-            accommodation.rooms_available AS ""Rooms Available"",
-            CONCAT(FORMAT(accommodation.room_price, 2), ' €') AS ""Room Price"",
-            CONCAT(FORMAT(trips.price + transport.transport_price + accommodation.room_price, 2), ' €') AS ""Total Cost""
-                FROM trips
-                JOIN destination ON trips.id_destination = destination.id_destination
-                JOIN transport ON trips.id_transport = transport.id_transport
-                JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation
-            ORDER BY trips.id_trip;";
-
-        using (MySqlConnection conn = new MySqlConnection(connectionString))
+        try
         {
-            conn.Open();
-            using (MySqlCommand cmd = new MySqlCommand(query, conn))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-                using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                conn.Open();
+                using (MySqlCommand cmd = new MySqlCommand("GetTripDetails", conn))
                 {
-                    DataTable baseTable = new DataTable();
-                    adapter.Fill(baseTable);
-                    DataGrid.ItemsSource = baseTable.DefaultView;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                    {
+                        DataTable dataTable = new DataTable();
+                        adapter.Fill(dataTable);
+                        DataGrid.ItemsSource = dataTable.DefaultView;
+                    }
                 }
             }
+        }
+        catch (MySqlException ex)
+        {
+            MessageBox.Show($"Database connection error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -105,89 +96,70 @@ public partial class MainWindow : Window
 
     private void LoadUserBookings()
     {
-        string query = @"SELECT 
-            id_bookings AS ""ID Book"", 
-            status AS ""Status"", 
-            trips.id_trip AS ""Trip ID"", 
-            booking_date AS ""Book Date"", 
-            name_trip AS ""Trip Name"", 
-            topic AS ""Topic"", 
-            DATE_FORMAT(date, '%d.%m.%Y') AS ""Trip Date"", 
-            CONCAT(FORMAT(price, 2), ' €') AS ""Trip Price"", 
-            city AS ""Destination City"", 
-            country AS ""Destination Country"", 
-            type AS ""Transport Type"", 
-            CONCAT(FORMAT(transport_price, 2), ' €') AS ""Transport Price"", 
-            hotel_name AS ""Hotel Name"", 
-            address AS ""Hotel Address"", 
-            rooms_available AS ""Rooms Available"", 
-            CONCAT(FORMAT(room_price, 2), ' €') AS ""Room Price"", 
-            CONCAT(FORMAT(price + transport_price + room_price, 2), ' €') AS ""Total Cost""
-            FROM bookings
-                JOIN trips ON bookings.id_trip = trips.id_trip
-                JOIN destination ON trips.id_destination = destination.id_destination
-                JOIN transport ON trips.id_transport = transport.id_transport
-                JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation
-            WHERE id_user = @UserId
-            ORDER BY booking_date;";
-
-        using (MySqlConnection conn = new MySqlConnection(connectionString))
+        try
         {
-            conn.Open();
-            using (MySqlCommand cmd = new MySqlCommand(query, conn))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-                cmd.Parameters.AddWithValue("@UserId", currentUserId);
-                using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                conn.Open();
+                using (MySqlCommand cmd = new MySqlCommand("GetUserBookings", conn))
                 {
-                    DataTable bookingsTable = new DataTable();
-                    adapter.Fill(bookingsTable);
-                    DataGrid_Booking.ItemsSource = bookingsTable.DefaultView;
-
-                    DataGrid_Booking.AutoGeneratingColumn += (s, e) =>
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("userId", currentUserId);
+                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
                     {
-                        if (e.PropertyName == "Trip ID")
+                        DataTable bookingsTable = new DataTable();
+                        adapter.Fill(bookingsTable);
+                        DataGrid_Booking.ItemsSource = bookingsTable.DefaultView;
+
+                        // Hide the "Trip ID" column
+                        DataGrid_Booking.AutoGeneratingColumn += (s, e) =>
                         {
-                            e.Column.Visibility = Visibility.Collapsed;
-                        }
-                    };
+                            if (e.PropertyName == "Trip ID")
+                            {
+                                e.Column.Visibility = Visibility.Collapsed;
+                            }
+                        };
+                    }
                 }
             }
+        }
+        catch (MySqlException ex)
+        {
+            MessageBox.Show($"Database connection error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
     private void LoadUserReviews()
     {
-        string query = @"SELECT
-            id_reviews as ""ID Reviews"",
-            DATE_FORMAT(review_date, '%d.%m.%Y') as ""Review Date"",
-            rating AS ""Rating"",
-            name_trip AS ""Trip Name"",
-            topic AS ""Topic"",
-            city AS ""Destination City"",
-            country AS ""Destination Country"",
-            type AS ""Transport Type"",
-            hotel_name AS ""Hotel Name"",
-            CONCAT(FORMAT(price + transport_price + room_price, 2), ' €') AS ""Total Cost""
-                FROM reviews
-                JOIN trips ON reviews.id_trip = trips.id_trip
-                JOIN destination ON trips.id_destination = destination.id_destination
-                JOIN transport ON trips.id_transport = transport.id_transport
-                JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation
-            WHERE id_user = @UserId;";
-
-        using (MySqlConnection conn = new MySqlConnection(connectionString))
+        try
         {
-            conn.Open();
-            using (MySqlCommand cmd = new MySqlCommand(query, conn))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-                cmd.Parameters.AddWithValue("@UserId", currentUserId);
-                using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                conn.Open();
+                using (MySqlCommand cmd = new MySqlCommand("GetUserReviews", conn))
                 {
-                    DataTable reviewsTable = new DataTable();
-                    adapter.Fill(reviewsTable);
-                    DataGrid_Review.ItemsSource = reviewsTable.DefaultView;
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("userId", currentUserId);
+                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                    {
+                        DataTable reviewsTable = new DataTable();
+                        adapter.Fill(reviewsTable);
+                        DataGrid_Review.ItemsSource = reviewsTable.DefaultView;
+                    }
                 }
             }
+        }
+        catch (MySqlException ex)
+        {
+            MessageBox.Show($"Database connection error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -382,7 +354,7 @@ public partial class MainWindow : Window
             if (DataGrid_Review.SelectedItem is DataRowView selectedRow)
             {
                 int reviewId = Convert.ToInt32(selectedRow["ID Reviews"]);
-                string deleteQuery = "DELETE FROM reviews WHERE id_reviews = @id_reviews";
+                string deleteQuery = @"DELETE FROM reviews WHERE id_reviews = @id_reviews";
                 using (MySqlConnection conn = new MySqlConnection(connectionString))
                 using (MySqlCommand cmd = new MySqlCommand(deleteQuery, conn))
                 {
@@ -508,45 +480,33 @@ public partial class MainWindow : Window
     {
         string searchText = SearchTextBox1.Text.Trim();
 
-        string query = @"SELECT 
-            id_bookings AS 'ID Book', 
-            status AS 'Status', 
-            trips.id_trip AS 'Trip ID', 
-            booking_date AS 'Book Date', 
-            name_trip AS 'Trip Name', 
-            topic AS 'Topic', 
-            DATE_FORMAT(date, '%d.%m.%Y') AS 'Trip Date', 
-            CONCAT(FORMAT(price, 2), ' €') AS 'Trip Price', 
-            city AS 'Destination City', 
-            country AS 'Destination Country', 
-            type AS 'Transport Type', 
-            CONCAT(FORMAT(transport_price, 2), ' €') AS 'Transport Price', 
-            hotel_name AS 'Hotel Name', 
-            address AS 'Hotel Address', 
-            rooms_available AS 'Rooms Available', 
-            CONCAT(FORMAT(room_price, 2), ' €') AS 'Room Price', 
-            CONCAT(FORMAT(price + transport_price + room_price, 2), ' €') AS 'Total Cost'
-                FROM bookings
-                JOIN trips ON bookings.id_trip = trips.id_trip
-                JOIN destination ON trips.id_destination = destination.id_destination
-                JOIN transport ON trips.id_transport = transport.id_transport
-                JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation
-            WHERE id_user = @UserId AND name_trip LIKE @SearchText
-            ORDER BY booking_date DESC;";
-
-        using (MySqlConnection conn = new MySqlConnection(connectionString))
+        try
         {
-            conn.Open();
-            using (MySqlCommand cmd = new MySqlCommand(query, conn))
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
             {
-                cmd.Parameters.AddWithValue("@UserId", currentUserId);
-                cmd.Parameters.AddWithValue("@SearchText", "%" + searchText + "%");
+                conn.Open();
+                using (MySqlCommand cmd = new MySqlCommand("SearchUserBookings", conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("p_id_user", currentUserId);
+                    cmd.Parameters.AddWithValue("p_search_text", "%" + searchText + "%");
 
-                MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
-                DataTable dt = new DataTable();
-                adapter.Fill(dt);
-                DataGrid_Booking.ItemsSource = dt.DefaultView;
+                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        DataGrid_Booking.ItemsSource = dt.DefaultView;
+                    }
+                }
             }
+        }
+        catch (MySqlException ex)
+        {
+            MessageBox.Show($"Database connection error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -585,67 +545,52 @@ public partial class MainWindow : Window
 
     private void FilterData()
     {
-        string query = @"SELECT 
-            trips.id_trip AS 'Trip ID',
-            trips.name_trip AS 'Trip Name',
-            trips.topic AS 'Topic',
-            DATE_FORMAT(trips.date, '%d.%m.%Y') AS 'Trip Date',
-            CONCAT(FORMAT(trips.price, 2), ' €') AS 'Trip Price',
-            destination.city AS 'Destination City',
-            destination.country AS 'Destination Country',
-            transport.type AS 'Transport Type',
-            CONCAT(FORMAT(transport.transport_price, 2), ' €') AS 'Transport Price',
-            accommodation.hotel_name AS 'Hotel Name',
-            accommodation.address AS 'Hotel Address',
-            accommodation.rooms_available AS 'Rooms Available',
-            CONCAT(FORMAT(accommodation.room_price, 2), ' €') AS 'Room Price',
-            CONCAT(FORMAT(trips.price + transport.transport_price + accommodation.room_price, 2), ' €') AS 'Total Cost'
-                FROM trips
-                JOIN destination ON trips.id_destination = destination.id_destination
-                JOIN transport ON trips.id_transport = transport.id_transport
-                JOIN accommodation ON trips.id_accommodation = accommodation.id_accommodation
-            WHERE 1=1";
-
-        var parameters = new List<MySqlParameter>();
-
-        if (TopicCheckBox.IsChecked == true && TopicComboBox.SelectedValue != null)
+        try
         {
-            query += @" AND trips.topic = @topic";
-            parameters.Add(new MySqlParameter("@topic", TopicComboBox.SelectedValue));
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                using (MySqlCommand command = new MySqlCommand("FilterTrips", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("p_topic",
+                        TopicCheckBox.IsChecked == true && TopicComboBox.SelectedValue != null
+                        ? TopicComboBox.SelectedValue
+                        : null);
+                    command.Parameters.AddWithValue("p_country",
+                        CountryCheckBox.IsChecked == true && CountryComboBox.SelectedValue != null
+                        ? CountryComboBox.SelectedValue
+                        : null);
+                    command.Parameters.AddWithValue("p_price",
+                        PriceCheckBox.IsChecked == true && PriceComboBox.SelectedValue != null
+                        ? PriceComboBox.SelectedValue
+                        : null);
+                    command.Parameters.AddWithValue("p_type",
+                        TypeTransportCheckBox.IsChecked == true && TypeTransportComboBox.SelectedValue != null
+                        ? TypeTransportComboBox.SelectedValue
+                        : null);
+                    command.Parameters.AddWithValue("p_search_text",
+                        !string.IsNullOrWhiteSpace(SearchTextBox.Text)
+                        ? "%" + SearchTextBox.Text + "%"
+                        : null);
+
+                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(command))
+                    {
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        DataGrid.ItemsSource = dt.DefaultView;
+                    }
+                }
+            }
         }
-
-        if (CountryCheckBox.IsChecked == true && CountryComboBox.SelectedValue != null)
+        catch (MySqlException ex)
         {
-            query += @" AND destination.country = @country";
-            parameters.Add(new MySqlParameter("@country", CountryComboBox.SelectedValue));
+            MessageBox.Show($"Database connection error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-
-        if (PriceCheckBox.IsChecked == true && PriceComboBox.SelectedValue != null)
+        catch (Exception ex)
         {
-            query += @" AND trips.price = @price";
-            parameters.Add(new MySqlParameter("@price", PriceComboBox.SelectedValue));
-        }
-
-        if (TypeTransportCheckBox.IsChecked == true && TypeTransportComboBox.SelectedValue != null)
-        {
-            query += @" AND transport.type = @type";
-            parameters.Add(new MySqlParameter("@type", TypeTransportComboBox.SelectedValue));
-        }
-
-        if (!string.IsNullOrWhiteSpace(SearchTextBox.Text))
-        {
-            query += @" AND trips.name_trip LIKE @searchText";
-            parameters.Add(new MySqlParameter("@searchText", "%" + SearchTextBox.Text + "%"));
-        }
-
-        using (var connection = new MySqlConnection(connectionString))
-        {
-            var command = new MySqlCommand(query, connection);
-            command.Parameters.AddRange(parameters.ToArray());
-            var adapter = new MySqlDataAdapter(command);
-            var dt = new DataTable();
-            adapter.Fill(dt);
-            DataGrid.ItemsSource = dt.DefaultView;
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
@@ -881,104 +826,55 @@ public partial class MainWindow : Window
     private void ViewButton_Click(object sender, RoutedEventArgs e)
     {
         MessageBoxResult result = MessageBox.Show(
-        "Are you sure you want to view?",
-        "Confirmation of action",
-        MessageBoxButton.YesNo,
-        MessageBoxImage.Question);
+            "Are you sure you want to view?",
+            "Confirmation of action",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
 
-        if (result == MessageBoxResult.Yes)
-        {
-            int selectIndex = AdminComboBox.SelectedIndex;
-
-            switch (selectIndex)
-            {
-                case 0:
-                    string query = @"SELECT 
-                    trips.topic AS 'Topic', 
-                    COUNT(*) AS 'Confirmed Bookings Count'
-                        FROM bookings
-                        JOIN trips ON bookings.id_trip = trips.id_trip
-                    WHERE bookings.status = 'CONFIRMED'
-                    GROUP BY trips.topic
-                    ORDER BY `Confirmed Bookings Count` DESC;";
-
-                    using (MySqlConnection conn = new MySqlConnection(connectionString))
-                    {
-                        try
-                        {
-                            conn.Open();
-                            MySqlCommand cmd = new MySqlCommand(query, conn);
-                            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
-                            DataTable dt = new DataTable();
-                            adapter.Fill(dt);
-                            AdminDataGrid.ItemsSource = dt.DefaultView;
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Error: " + ex.Message);
-                        }
-                    }
-                    break;
-                case 1:
-                    query = @"SELECT 
-                    name_trip AS 'Trip Name',
-                    COUNT(bookings.id_bookings) AS 'Confirmed Bookings Count'
-                    FROM bookings
-                        JOIN trips ON bookings.id_trip = trips.id_trip
-                    WHERE status = 'CONFIRMED'
-                    GROUP BY name_trip
-                    ORDER BY 'Confirmed Bookings Count' DESC;";
-
-                    using (MySqlConnection conn = new MySqlConnection(connectionString))
-                    {
-                        try
-                        {
-                            conn.Open();
-                            MySqlCommand cmd = new MySqlCommand(query, conn);
-                            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
-                            DataTable dt = new DataTable();
-                            adapter.Fill(dt);
-                            AdminDataGrid.ItemsSource = dt.DefaultView;
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Error: " + ex.Message);
-                        }
-                    }
-                    break;
-                case 2:
-                    query = @"SELECT 
-                    first_name_user AS 'First Name',
-                    last_name_user AS 'Last Name',
-                    email_user AS Email,
-                    COUNT(bookings.id_bookings) AS TotalBookings
-                    FROM user
-                        LEFT JOIN bookings ON user.id_user = bookings.id_user
-                    GROUP BY first_name_user, last_name_user, email_user
-                    ORDER BY TotalBookings DESC;";
-
-                    using (MySqlConnection conn = new MySqlConnection(connectionString))
-                    {
-                        try
-                        {
-                            conn.Open();
-                            MySqlCommand cmd = new MySqlCommand(query, conn);
-                            MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
-                            DataTable dt = new DataTable();
-                            adapter.Fill(dt);
-                            AdminDataGrid.ItemsSource = dt.DefaultView;
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("Error: " + ex.Message);
-                        }
-                    }
-                    break;
-            }
-        }
-        else
+        if (result != MessageBoxResult.Yes)
         {
             return;
+        }
+
+        int selectIndex = AdminComboBox.SelectedIndex;
+        string procedureName = selectIndex switch
+        {
+            0 => "GetConfirmedBookingsByTopic",
+            1 => "GetConfirmedBookingsByTripName",
+            2 => "GetUserBookingCounts",
+            _ => null
+        };
+
+        if (procedureName == null)
+        {
+            MessageBox.Show("Invalid selection.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        try
+        {
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
+            {
+                conn.Open();
+                using (MySqlCommand cmd = new MySqlCommand(procedureName, conn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure; // Specify that this is a stored procedure
+                    using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
+                    {
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        AdminDataGrid.ItemsSource = dt.DefaultView; // Bind data to AdminDataGrid
+                    }
+                }
+            }
+        }
+        catch (MySqlException ex)
+        {
+            MessageBox.Show($"Database connection error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

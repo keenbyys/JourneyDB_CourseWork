@@ -229,7 +229,8 @@
                                 <TabItem Header="Booking">
                                     <StackPanel Margin="10">
                                         <DataGrid x:Name="DataGrid_Booking" AutoGenerateColumns="True" Height="580"
-                                                  BorderThickness="0"/>
+                                                  BorderThickness="0"
+                                                  IsReadOnly="True"/>
                                     </StackPanel>
                                 </TabItem>
 

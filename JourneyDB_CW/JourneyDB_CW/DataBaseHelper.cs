@@ -37,34 +37,7 @@ namespace JourneyDB_CW
             return dataTable;
         }
 
-        public void AddQuery(string query)
-        {
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                try
-                {
-                    connection.Open();
-
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
-                    {
-                        int result = command.ExecuteNonQuery();
-
-                        if (result > 0)
-                        {
-                            MessageBox.Show("Фиксированная запись успешно добавлена!");
-                        }
-                        else
-                        {
-                            MessageBox.Show("Ошибка при добавлении записи.");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Ошибка: " + ex.Message);
-                }
-            }
-        }
+        
         public void NoneQuery(string query)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
