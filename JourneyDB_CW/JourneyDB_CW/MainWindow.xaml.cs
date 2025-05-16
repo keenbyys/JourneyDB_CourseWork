@@ -44,6 +44,19 @@ public partial class MainWindow : Window
         FilterData();
     }
 
+    public void TotalLoadData()
+    {
+        LoadDataBase();
+        LoadUserData();
+        LoadUserBookings();
+        LoadUserReviews();
+        LoadUniqueValues("SELECT DISTINCT topic FROM trips ORDER BY topic ASC", TopicComboBox, "topic");
+        LoadUniqueValues("SELECT DISTINCT country FROM destination ORDER BY country ASC", CountryComboBox, "country");
+        LoadUniqueValues("SELECT DISTINCT price FROM trips ORDER BY price ASC", PriceComboBox, "price");
+        LoadUniqueValues("SELECT DISTINCT type FROM transport ORDER BY type ASC", TypeTransportComboBox, "type");
+        FilterData();
+    }
+
     public void LoadDataBase()
     {
         try
@@ -555,11 +568,23 @@ public partial class MainWindow : Window
     private void AdminCheckBox_Checked(object sender, RoutedEventArgs e)
     {
         AdminTabItem.Visibility = Visibility.Visible;
+        TableComboBox.IsEnabled = true;
+        LoadTableButton.IsEnabled = true;
+        AddButton.IsEnabled = true;
+        DeleteButton.IsEnabled = true;
+        AdminComboBox.IsEnabled = true;
+        ViewButton.IsEnabled = true;
     }
 
     private void AdminCheckBox_Unchecked(object sender, RoutedEventArgs e)
     {
         AdminTabItem.Visibility = Visibility.Collapsed;
+        TableComboBox.IsEnabled = false;
+        LoadTableButton.IsEnabled = false;
+        AddButton.IsEnabled = false;
+        DeleteButton.IsEnabled = false;
+        AdminComboBox.IsEnabled = false;
+        ViewButton.IsEnabled = false;
     }
 
     private void LoadTableButton_Click(object sender, RoutedEventArgs e)
@@ -637,6 +662,7 @@ public partial class MainWindow : Window
                 var table = helperDataBase.SelectQuery(@"INSERT INTO user (first_name_user, last_name_user, email_user, password_user, birth_date) 
                     VALUES ('first_name', 'last_name', '@gmail.com', 'password', '2025-01-01');");
                 LoadTableButton_Click(sender, e);
+                TotalLoadData();
             }
 
             if (TableComboBox.Text == "trips")
@@ -644,36 +670,42 @@ public partial class MainWindow : Window
                 var table = helperDataBase.SelectQuery(@"INSERT INTO trips (name_trip, topic, id_destination, date, price, id_transport, id_accommodation) 
                     VALUES ('name_trip', 'topic', 000, 'date', 000, 000, 000);");
                 LoadTableButton_Click(sender, e);
+                TotalLoadData();
             }
             if (TableComboBox.Text == "transport")
             {
                 var table = helperDataBase.SelectQuery(@"INSERT INTO transport (type, transport_price) 
                     VALUES ('type', 000);");
                 LoadTableButton_Click(sender, e);
+                TotalLoadData();
             }
             if (TableComboBox.Text == "reviews")
             {
                 var table = helperDataBase.SelectQuery(@"INSERT INTO reviews (id_user, id_trip, rating, review_date) 
                     VALUES (000, 000, 'rating', 'review_date');");
                 LoadTableButton_Click(sender, e);
+                TotalLoadData();
             }
             if (TableComboBox.Text == "destination")
             {
                 var table = helperDataBase.SelectQuery(@"INSERT INTO destination (city, country) 
                     VALUES ('city', 'country');");
                 LoadTableButton_Click(sender, e);
+                TotalLoadData();
             }
             if (TableComboBox.Text == "bookings")
             {
                 var table = helperDataBase.SelectQuery(@"INSERT INTO bookings (status, id_user, id_trip, booking_date) 
                     VALUES ('status', 000, 000, 'booking_date');");
                 LoadTableButton_Click(sender, e);
+                TotalLoadData();
             }
             if (TableComboBox.Text == "accommodation")
             {
                 var table = helperDataBase.SelectQuery(@"INSERT INTO accommodation (hotel_name, address, rooms_available, room_price) 
                     VALUES ('hotel_name', 'address', 000, 000);");
                 LoadTableButton_Click(sender, e);
+                TotalLoadData();
             }
             else if (TableComboBox.Text == "")
             {
@@ -709,6 +741,7 @@ public partial class MainWindow : Window
                         string query = @$"DELETE FROM user WHERE id_user = {id_user}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
+                        TotalLoadData();
                     }
                     else if (TableComboBox.Text == "trips")
                     {
@@ -716,6 +749,7 @@ public partial class MainWindow : Window
                         string query = @$"DELETE FROM trips WHERE id_trip = {id_trip}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
+                        TotalLoadData();
                     }
                     else if (TableComboBox.Text == "transport")
                     {
@@ -723,6 +757,7 @@ public partial class MainWindow : Window
                         string query = @$"DELETE FROM transport WHERE id_transport = {id_transport}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
+                        TotalLoadData();
                     }
                     else if (TableComboBox.Text == "reviews")
                     {
@@ -730,6 +765,7 @@ public partial class MainWindow : Window
                         string query = @$"DELETE FROM reviews WHERE id_reviews = {id_reviews}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
+                        TotalLoadData();
                     }
                     else if (TableComboBox.Text == "destination")
                     {
@@ -737,6 +773,7 @@ public partial class MainWindow : Window
                         string query = @$"DELETE FROM destination WHERE id_destination = {id_destination}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
+                        TotalLoadData();
                     }
                     else if (TableComboBox.Text == "bookings")
                     {
@@ -744,6 +781,7 @@ public partial class MainWindow : Window
                         string query = @$"DELETE FROM bookings WHERE id_bookings = {id_bookings}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
+                        TotalLoadData();
                     }
                     else if (TableComboBox.Text == "accommodation")
                     {
@@ -751,6 +789,7 @@ public partial class MainWindow : Window
                         string query = @$"DELETE FROM accommodation WHERE id_accommodation = {id_accommodation}";
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
+                        TotalLoadData();
                     }
                 }
                 else

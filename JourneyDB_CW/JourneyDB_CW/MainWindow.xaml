@@ -268,7 +268,7 @@
                                     Margin="0,0,0,10">
                                 <StackPanel Margin="5,10,5,10">
                                     <TextBlock Text="Table:" FontWeight="Bold" Margin="10,10,10,0" FontSize="15"/>
-                                    <ComboBox x:Name="TableComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 10">
+                                    <ComboBox x:Name="TableComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 10" IsEnabled="False">
                                         <ComboBoxItem Content="user" />
                                         <ComboBoxItem Content="trips" />
                                         <ComboBoxItem Content="transport"/>
@@ -279,7 +279,8 @@
                                     </ComboBox>
                                     <Button x:Name="LoadTableButton" Content="Load" Width="Auto" Height="Auto" Margin="10,0,10,10" Click="LoadTableButton_Click"
                                             FontSize="15" 
-                                            BorderThickness="0"/>
+                                            BorderThickness="0"
+                                            IsEnabled="False"/>
                                 </StackPanel>
 
                             </Border>
@@ -290,10 +291,12 @@
                                 <StackPanel Margin="5,10,5,10">
                                     <Button x:Name="AddButton" Content="Add" Width="Auto" Height="Auto" Margin="10,10,10,10" Click="AddButton_Click"
                                             FontSize="15"
-                                            BorderThickness="0"/>
+                                            BorderThickness="0"
+                                            IsEnabled="False"/>
                                     <Button x:Name="DeleteButton" Content="Delete" Width="Auto" Height="Auto" Margin="10,0,10,10" Click="DeleteButton_Click"
                                             FontSize="15" 
-                                            BorderThickness="0"/>
+                                            BorderThickness="0"
+                                            IsEnabled="False"/>
                                 </StackPanel>
 
                             </Border>
@@ -303,14 +306,15 @@
                                     Margin="0,0,0,10">
                                 <StackPanel Margin="5,0,5,10">
                                     <TextBlock Text="Analisys:" FontWeight="Bold" Margin="10,15,10,0" FontSize="15"/>
-                                    <ComboBox x:Name="AdminComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 0">
+                                    <ComboBox x:Name="AdminComboBox" Width="Auto" Height="Auto" Margin="10, 0, 10, 0" IsEnabled="False">
                                         <ComboBoxItem Content="Most popular destination"/>
                                         <ComboBoxItem Content="Number of organized trips"/>
                                         <ComboBoxItem Content="User activity"/>
                                     </ComboBox>
                                     <Button x:Name="ViewButton" Content="View" Width="Auto" Height="Auto" Margin="10,10,10,10" Click="ViewButton_Click"
                                             FontSize="15" 
-                                            BorderThickness="0"/>
+                                            BorderThickness="0"
+                                            IsEnabled="False"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
