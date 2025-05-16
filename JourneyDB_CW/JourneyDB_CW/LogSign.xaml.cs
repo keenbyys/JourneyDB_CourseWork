@@ -45,9 +45,9 @@ namespace JourneyDB_CW
             DateTime birthDate = BirthDatePicker.SelectedDate.Value;
             int age = CalculateAge(birthDate);
 
-            if (age < 18)
+            if (age < 16)
             {
-                MessageBox.Show("You must be at least 18 years old to register.", "Age Restriction", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("You must be at least 16 years old to register.", "Age Restriction", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 

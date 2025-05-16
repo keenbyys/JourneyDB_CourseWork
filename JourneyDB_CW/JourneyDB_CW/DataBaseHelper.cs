@@ -12,8 +12,7 @@ namespace JourneyDB_CW
 {
     class DatabaseHelper
     {
-        private string connectionString = "Server=localhost;Database=db_joint_journey;Uid=root;Pwd=50026022SVK-23;";
-        MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+        string connectionString = "Server=localhost;Database=db_joint_journey;Uid=root;Pwd=50026022SVK-23;";
 
         public DataTable SelectQuery(string query)
         {
@@ -53,5 +52,6 @@ namespace JourneyDB_CW
                 }
             }
         }
+
     }
 }

@@ -668,7 +668,7 @@ public partial class MainWindow : Window
             if (TableComboBox.Text == "trips")
             {
                 var table = helperDataBase.SelectQuery(@"INSERT INTO trips (name_trip, topic, id_destination, date, price, id_transport, id_accommodation) 
-                    VALUES ('name_trip', 'topic', 000, 'date', 000, 000, 000);");
+                    VALUES ('name_trip', 'topic', 1, '2025-01-01', 000, 1, 1);");
                 LoadTableButton_Click(sender, e);
                 TotalLoadData();
             }
@@ -681,8 +681,8 @@ public partial class MainWindow : Window
             }
             if (TableComboBox.Text == "reviews")
             {
-                var table = helperDataBase.SelectQuery(@"INSERT INTO reviews (id_user, id_trip, rating, review_date) 
-                    VALUES (000, 000, 'rating', 'review_date');");
+                var table = helperDataBase.SelectQuery(@$"INSERT INTO reviews (id_user, id_trip, rating, review_date) 
+                    VALUES ({currentUserId}, 1, '1', '2025-01-01');");
                 LoadTableButton_Click(sender, e);
                 TotalLoadData();
             }
@@ -695,8 +695,8 @@ public partial class MainWindow : Window
             }
             if (TableComboBox.Text == "bookings")
             {
-                var table = helperDataBase.SelectQuery(@"INSERT INTO bookings (status, id_user, id_trip, booking_date) 
-                    VALUES ('status', 000, 000, 'booking_date');");
+                var table = helperDataBase.SelectQuery(@$"INSERT INTO bookings (status, id_user, id_trip, booking_date) 
+                    VALUES ('WAIT', {currentUserId}, 1, '2025-01-01');");
                 LoadTableButton_Click(sender, e);
                 TotalLoadData();
             }
