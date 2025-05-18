@@ -153,79 +153,116 @@ public partial class MainWindow : Window
     private void BookingButton_Click(object sender, RoutedEventArgs e)
     {
         MessageBoxResult result = MessageBox.Show(
-        "Are you sure you want to book?",
-        "Confirmation of action",
-        MessageBoxButton.YesNo,
-        MessageBoxImage.Question);
+            "Are you sure you want to book?",
+            "Confirmation of action",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
 
-        if (result == MessageBoxResult.Yes)
+        if (result != MessageBoxResult.Yes)
+            return;
+
+        if (DataGrid.SelectedItem is not DataRowView selectedRow)
         {
-            if (DataGrid.SelectedItem is DataRowView selectedRow)
+            MessageBox.Show("Please select a trip from the table.");
+            return;
+        }
+
+        int tripId;
+        try
+        {
+            tripId = Convert.ToInt32(selectedRow["Trip ID"]);
+        }
+        catch
+        {
+            MessageBox.Show("Failed to retrieve trip ID.");
+            return;
+        }
+
+        string checkQuery = @"SELECT COUNT(*) FROM bookings 
+                          WHERE id_user = @id_user AND id_trip = @id_trip 
+                          AND status IN ('CONFIRMED')";
+
+        string availabilityQuery = "SELECT total_count FROM trips WHERE id_trip = @id_trip";
+
+        using (MySqlConnection conn = new MySqlConnection(connectionString))
+        using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
+        {
+            checkCmd.Parameters.AddWithValue("@id_user", currentUserId);
+            checkCmd.Parameters.AddWithValue("@id_trip", tripId);
+
+            try
             {
-                int tripId;
-                try
+                conn.Open();
+
+                
+                int existingCount = Convert.ToInt32(checkCmd.ExecuteScalar());
+                if (existingCount > 0)
                 {
-                    tripId = Convert.ToInt32(selectedRow["Trip ID"]);
-                }
-                catch
-                {
-                    MessageBox.Show("Failed to retrieve trip ID.");
+                    MessageBox.Show("You have already booked this trip (CONFIRMED).");
                     return;
                 }
 
-                string checkQuery = @"SELECT COUNT(*) FROM bookings 
-                              WHERE id_user = @id_user AND id_trip = @id_trip 
-                              AND status IN ('CONFIRMED')";
+                
+                string status = GetRandomStatus();
 
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
-                using (MySqlCommand checkCmd = new MySqlCommand(checkQuery, conn))
+                
+                if (status == "CONFIRMED")
                 {
-                    checkCmd.Parameters.AddWithValue("@id_user", currentUserId);
-                    checkCmd.Parameters.AddWithValue("@id_trip", tripId);
-
-                    try
+                    using (MySqlCommand availCmd = new MySqlCommand(availabilityQuery, conn))
                     {
-                        conn.Open();
-                        int existingCount = Convert.ToInt32(checkCmd.ExecuteScalar());
-
-                        if (existingCount > 0)
+                        availCmd.Parameters.AddWithValue("@id_trip", tripId);
+                        object totalObj = availCmd.ExecuteScalar();
+                        if (totalObj == null)
                         {
-                            MessageBox.Show("You have already booked this trip (CONFIRMED).");
+                            MessageBox.Show("Trip not found.");
                             return;
                         }
 
-                        string status = GetRandomStatus();
-                        DateTime bookingDate = DateTime.Now;
-
-                        string insertQuery = @"INSERT INTO bookings (id_user, id_trip, status, booking_date)
-                                       VALUES (@id_user, @id_trip, @status, @booking_date)";
-
-                        using (MySqlCommand insertCmd = new MySqlCommand(insertQuery, conn))
+                        int totalCount = Convert.ToInt32(totalObj);
+                        if (totalCount <= 0)
                         {
-                            insertCmd.Parameters.AddWithValue("@id_user", currentUserId);
-                            insertCmd.Parameters.AddWithValue("@id_trip", tripId);
-                            insertCmd.Parameters.AddWithValue("@status", status);
-                            insertCmd.Parameters.AddWithValue("@booking_date", bookingDate);
-
-                            insertCmd.ExecuteNonQuery();
-                            MessageBox.Show($"Booking created with status: {status}");
-                            LoadUserBookings();
+                            MessageBox.Show("No seats available for this trip.");
+                            return;
                         }
                     }
-                    catch (Exception ex)
+                }
+
+                
+                DateTime bookingDate = DateTime.Now;
+
+                string insertQuery = @"INSERT INTO bookings (id_user, id_trip, status, booking_date)
+                                   VALUES (@id_user, @id_trip, @status, @booking_date)";
+
+                using (MySqlCommand insertCmd = new MySqlCommand(insertQuery, conn))
+                {
+                    insertCmd.Parameters.AddWithValue("@id_user", currentUserId);
+                    insertCmd.Parameters.AddWithValue("@id_trip", tripId);
+                    insertCmd.Parameters.AddWithValue("@status", status);
+                    insertCmd.Parameters.AddWithValue("@booking_date", bookingDate);
+
+                    insertCmd.ExecuteNonQuery();
+                }
+
+               
+                if (status == "CONFIRMED")
+                {
+                    string updateCountQuery = @"UPDATE trips SET total_count = total_count - 1 
+                                            WHERE id_trip = @id_trip AND total_count > 0";
+                    using (MySqlCommand updateCmd = new MySqlCommand(updateCountQuery, conn))
                     {
-                        MessageBox.Show("Error: " + ex.Message);
+                        updateCmd.Parameters.AddWithValue("@id_trip", tripId);
+                        updateCmd.ExecuteNonQuery();
                     }
                 }
+
+                MessageBox.Show($"Booking created with status: {status}");
+                LoadUserBookings();
+                FilterData();
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("Please select a trip from the table.");
+                MessageBox.Show("Error: " + ex.Message);
             }
-        }
-        else
-        {
-            return;
         }
     }
 
@@ -663,14 +700,16 @@ public partial class MainWindow : Window
                     VALUES ('first_name', 'last_name', '@gmail.com', 'password', '2025-01-01');");
                 LoadTableButton_Click(sender, e);
                 TotalLoadData();
+                FilterData();
             }
 
             if (TableComboBox.Text == "trips")
             {
-                var table = helperDataBase.SelectQuery(@"INSERT INTO trips (name_trip, topic, id_destination, date, price, id_transport, id_accommodation) 
-                    VALUES ('name_trip', 'topic', 1, '2025-01-01', 000, 1, 1);");
+                var table = helperDataBase.SelectQuery(@"INSERT INTO trips (name_trip, topic, total_count, id_destination, date, price, id_transport, id_accommodation) 
+                    VALUES ('name_trip', 'topic', 1, 1, '2025-01-01', 000, 1, 1);");
                 LoadTableButton_Click(sender, e);
                 TotalLoadData();
+                FilterData();
             }
             if (TableComboBox.Text == "transport")
             {
@@ -678,6 +717,7 @@ public partial class MainWindow : Window
                     VALUES ('type', 000);");
                 LoadTableButton_Click(sender, e);
                 TotalLoadData();
+                FilterData();
             }
             if (TableComboBox.Text == "reviews")
             {
@@ -685,6 +725,7 @@ public partial class MainWindow : Window
                     VALUES ({currentUserId}, 1, '1', '2025-01-01');");
                 LoadTableButton_Click(sender, e);
                 TotalLoadData();
+                FilterData();
             }
             if (TableComboBox.Text == "destination")
             {
@@ -692,6 +733,7 @@ public partial class MainWindow : Window
                     VALUES ('city', 'country');");
                 LoadTableButton_Click(sender, e);
                 TotalLoadData();
+                FilterData();
             }
             if (TableComboBox.Text == "bookings")
             {
@@ -699,6 +741,7 @@ public partial class MainWindow : Window
                     VALUES ('WAIT', {currentUserId}, 1, '2025-01-01');");
                 LoadTableButton_Click(sender, e);
                 TotalLoadData();
+                FilterData();
             }
             if (TableComboBox.Text == "accommodation")
             {
@@ -706,6 +749,7 @@ public partial class MainWindow : Window
                     VALUES ('hotel_name', 'address', 000, 000);");
                 LoadTableButton_Click(sender, e);
                 TotalLoadData();
+                FilterData();
             }
             else if (TableComboBox.Text == "")
             {
@@ -742,6 +786,7 @@ public partial class MainWindow : Window
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                         TotalLoadData();
+                        FilterData();
                     }
                     else if (TableComboBox.Text == "trips")
                     {
@@ -750,6 +795,7 @@ public partial class MainWindow : Window
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                         TotalLoadData();
+                        FilterData();
                     }
                     else if (TableComboBox.Text == "transport")
                     {
@@ -758,6 +804,7 @@ public partial class MainWindow : Window
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                         TotalLoadData();
+                        FilterData();
                     }
                     else if (TableComboBox.Text == "reviews")
                     {
@@ -766,6 +813,7 @@ public partial class MainWindow : Window
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                         TotalLoadData();
+                        FilterData();
                     }
                     else if (TableComboBox.Text == "destination")
                     {
@@ -774,6 +822,7 @@ public partial class MainWindow : Window
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                         TotalLoadData();
+                        FilterData();
                     }
                     else if (TableComboBox.Text == "bookings")
                     {
@@ -782,6 +831,7 @@ public partial class MainWindow : Window
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                         TotalLoadData();
+                        FilterData();
                     }
                     else if (TableComboBox.Text == "accommodation")
                     {
@@ -790,6 +840,7 @@ public partial class MainWindow : Window
                         delete.NoneQuery(query);
                         LoadTableButton_Click(sender, e);
                         TotalLoadData();
+                        FilterData();
                     }
                 }
                 else
@@ -843,12 +894,12 @@ public partial class MainWindow : Window
                 conn.Open();
                 using (MySqlCommand cmd = new MySqlCommand(procedureName, conn))
                 {
-                    cmd.CommandType = CommandType.StoredProcedure; // Specify that this is a stored procedure
+                    cmd.CommandType = CommandType.StoredProcedure;
                     using (MySqlDataAdapter adapter = new MySqlDataAdapter(cmd))
                     {
                         DataTable dt = new DataTable();
                         adapter.Fill(dt);
-                        AdminDataGrid.ItemsSource = dt.DefaultView; // Bind data to AdminDataGrid
+                        AdminDataGrid.ItemsSource = dt.DefaultView;
                     }
                 }
             }
@@ -883,6 +934,49 @@ public partial class MainWindow : Window
                     string table = "user";
                     string id_table = "id_user";
                     UpdateDatabase(id, columnName, newValue, table, id_table);
+                    FilterData();
+                    break;
+                case 1:
+                    id = Convert.ToInt32(row["id_trip"]);
+                    table = "trips";
+                    id_table = "id_trip";
+                    UpdateDatabase(id, columnName, newValue, table, id_table);
+                    FilterData();
+                    break;
+                case 2:
+                    id = Convert.ToInt32(row["id_transport"]);
+                    table = "transport";
+                     id_table = "id_transport";
+                    UpdateDatabase(id, columnName, newValue, table, id_table);
+                    FilterData();
+                    break;
+                case 3:
+                    id = Convert.ToInt32(row["id_reviews"]);
+                    table = "reviews";
+                    id_table = "id_reviews";
+                    UpdateDatabase(id, columnName, newValue, table, id_table);
+                    FilterData();
+                    break;
+                case 4:
+                    id = Convert.ToInt32(row["id_destination"]);
+                    table = "destination";
+                    id_table = "id_destination";
+                    UpdateDatabase(id, columnName, newValue, table, id_table);
+                    FilterData();
+                    break;
+                case 5:
+                    id = Convert.ToInt32(row["id_bookings"]);
+                    table = "bookings";
+                    id_table = "id_bookings";
+                    UpdateDatabase(id, columnName, newValue, table, id_table);
+                    FilterData();
+                    break;
+                case 6:
+                    id = Convert.ToInt32(row["id_accommodation"]);
+                    table = "accommodation";
+                    id_table = "id_accommodation";
+                    UpdateDatabase(id, columnName, newValue, table, id_table);
+                    FilterData();
                     break;
             }
         });

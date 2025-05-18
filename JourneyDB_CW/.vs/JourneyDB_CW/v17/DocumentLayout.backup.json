@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\logsign.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\logsign.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\databaseprocedures.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -15,12 +19,8 @@
       "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|c:\\users\\sjdro\\source\\repos\\journeydb_coursework\\journeydb_coursework\\journeydb_cw\\journeydb_cw\\logsign.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{03C6E33F-2B40-43C2-9F74-0A82F9BB9415}|JourneyDB_CW\\JourneyDB_CW.csproj|solutionrelative:journeydb_cw\\logsign.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,70 +30,69 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 4,
               "Title": "LogSign.xaml.cs",
               "DocumentMoniker": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\LogSign.xaml.cs",
               "RelativeDocumentMoniker": "JourneyDB_CW\\LogSign.xaml.cs",
               "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\LogSign.xaml.cs",
               "RelativeToolTip": "JourneyDB_CW\\LogSign.xaml.cs",
-              "ViewState": "AgIAACAAAAAAAAAAAAAwwDEAAABIAAAAAAAAAA==",
+              "ViewState": "AgIAAJIAAAAAAAAAAAAgwBgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-16T11:12:09.549Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-16T11:12:09.549Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\MainWindow.xaml",
               "RelativeDocumentMoniker": "JourneyDB_CW\\MainWindow.xaml",
               "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\MainWindow.xaml",
               "RelativeToolTip": "JourneyDB_CW\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-05-16T09:30:41.337Z"
+              "WhenOpened": "2025-05-16T09:30:41.337Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "JourneyDB_CW\\MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\MainWindow.xaml.cs",
               "RelativeToolTip": "JourneyDB_CW\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAeAAAAAAAAAA==",
+              "ViewState": "AgIAAK0DAAAAAAAAAAAuwNIDAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-12T19:11:00.385Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "DataBaseProcedures.cs",
               "DocumentMoniker": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\DataBaseProcedures.cs",
               "RelativeDocumentMoniker": "JourneyDB_CW\\DataBaseProcedures.cs",
               "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\DataBaseProcedures.cs",
               "RelativeToolTip": "JourneyDB_CW\\DataBaseProcedures.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAABAAAAAAAAAAAAAgwE8AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-16T08:48:55.019Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "DataBaseHelper.cs",
               "DocumentMoniker": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\DataBaseHelper.cs",
               "RelativeDocumentMoniker": "JourneyDB_CW\\DataBaseHelper.cs",
               "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\DataBaseHelper.cs",
               "RelativeToolTip": "JourneyDB_CW\\DataBaseHelper.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACYAAAArAAAAAAAAAA==",
+              "ViewState": "AgIAABQAAAAAAAAAAAAowDUAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-16T06:27:32.06Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-16T06:27:32.06Z"
             }
           ]
         }
