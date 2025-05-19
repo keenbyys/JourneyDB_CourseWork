@@ -53,8 +53,7 @@
               "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\MainWindow.xaml",
               "RelativeToolTip": "JourneyDB_CW\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-05-16T09:30:41.337Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-16T09:30:41.337Z"
             },
             {
               "$type": "Document",
@@ -64,7 +63,7 @@
               "RelativeDocumentMoniker": "JourneyDB_CW\\MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\MainWindow.xaml.cs",
               "RelativeToolTip": "JourneyDB_CW\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAK0DAAAAAAAAAAAuwMIDAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-12T19:11:00.385Z",
               "EditorCaption": ""
@@ -77,10 +76,9 @@
               "RelativeDocumentMoniker": "JourneyDB_CW\\DataBaseProcedures.cs",
               "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\DataBaseProcedures.cs",
               "RelativeToolTip": "JourneyDB_CW\\DataBaseProcedures.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAAgwE8AAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAQwE8AAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-16T08:48:55.019Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-16T08:48:55.019Z"
             },
             {
               "$type": "Document",
@@ -90,7 +88,7 @@
               "RelativeDocumentMoniker": "JourneyDB_CW\\DataBaseHelper.cs",
               "ToolTip": "C:\\Users\\sjdro\\source\\repos\\JourneyDB_CourseWork\\JourneyDB_CourseWork\\JourneyDB_CW\\JourneyDB_CW\\DataBaseHelper.cs",
               "RelativeToolTip": "JourneyDB_CW\\DataBaseHelper.cs",
-              "ViewState": "AgIAABQAAAAAAAAAAAAowDUAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAABEAAAAAAAAAAAAowDUAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-16T06:27:32.06Z"
             }

@@ -2,8 +2,10 @@
 using Mysqlx.Crud;
 using System.Data;
 using System.Globalization;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -14,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace JourneyDB_CW;
 
@@ -25,6 +28,8 @@ public partial class MainWindow : Window
     private string connectionString = "Server=localhost;Database=db_joint_journey;Uid=root;Pwd=50026022SVK-23;";
     DataBaseProcedures _dbService = new DataBaseProcedures("Server=localhost;Database=db_joint_journey;Uid=root;Pwd=50026022SVK-23;");
     private readonly int currentUserId;
+    private DispatcherTimer checkUserTimer;
+
 
     public MainWindow(int userId)
     {
@@ -42,6 +47,7 @@ public partial class MainWindow : Window
         LoadUniqueValues("SELECT DISTINCT type FROM transport ORDER BY type ASC", TypeTransportComboBox, "type");
         
         FilterData();
+        StartUserCheckTimer();
     }
 
     public void TotalLoadData()
@@ -55,6 +61,43 @@ public partial class MainWindow : Window
         LoadUniqueValues("SELECT DISTINCT price FROM trips ORDER BY price ASC", PriceComboBox, "price");
         LoadUniqueValues("SELECT DISTINCT type FROM transport ORDER BY type ASC", TypeTransportComboBox, "type");
         FilterData();
+    }
+
+    private void StartUserCheckTimer()
+    {
+        checkUserTimer = new DispatcherTimer();
+        checkUserTimer.Interval = TimeSpan.FromSeconds(5);
+        checkUserTimer.Tick += CheckIfUserStillExists;
+        checkUserTimer.Start();
+    }
+
+    private void CheckIfUserStillExists(object sender, EventArgs e)
+    {
+        using (MySqlConnection conn = new MySqlConnection(connectionString))
+        {
+            try
+            {
+                conn.Open();
+                string query = "SELECT COUNT(*) FROM user WHERE id_user = @id_user";
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@id_user", currentUserId);
+
+                long count = (long)cmd.ExecuteScalar();
+
+                if (count == 0)
+                {
+                    checkUserTimer?.Stop();
+
+                    MessageBox.Show("Your account has been deleted. The program is shutting down.",
+                        "Deleting a user", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    Application.Current.Shutdown();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("User validation error: " + ex.Message);
+            }
+        }
     }
 
     public void LoadDataBase()
